@@ -1,0 +1,41 @@
+# Contrato de data-testid de S-17-transferir (fase F2).
+# C3: esto es un contrato versionado, no un detalle de implementación. Renombrar uno rompe
+# todas las suites a la vez; se cambia con nota en el registro de cambios.
+# El check corre sobre el ARTEFACTO RENDERIZADO (brazo N1), nunca sobre el código fuente.
+#
+# Lo que esta unidad NO agrega: el tipo real (TR1–TR3) viaja en `data-tipo` de las <option>
+# de `transferir-origen` y `transferir-destino-propia`, que ya están en S-10-testids-T4.txt.
+# Un atributo de una opción no es un testid nuevo: no se inventa una entrada para él.
+
+# El tercer destino (JT1–JT2)
+transferir-destino-modo-banco
+transferir-destino-banco
+transferir-destino-numero
+transferir-destino-tipo
+
+# El tope diario, siempre visible en el modo banco (JT9, CA8)
+transferir-banco-tope
+
+# La confirmación releída del GET /transferencias/otros-bancos/:id (JT6–JT8, CA7)
+# Cada uno lleva el código en un atributo y el rótulo visible DENTRO del mismo elemento:
+#   transferir-banco-nombre  → data-banco="<código del catálogo>"
+#   transferir-banco-numero  → data-numero="<numeroCuenta del GET>"
+#   transferir-banco-tipo    → data-tipo="<CORRIENTE|AHORRO>"
+#   transferir-banco-monto   → data-monto="<string decimal del GET>"
+#   transferir-banco-fecha   → data-realizada-en="<ISO del GET>", texto visible terminado en «UTC»
+transferir-banco-nombre
+transferir-banco-numero
+transferir-banco-tipo
+transferir-banco-monto
+transferir-banco-fecha
+
+# El paso Revisar del modo banco (F4 · brazo B8 · JT13)
+# § 4.2 exige que Revisar muestre banco, número y tipo ANTES de enviar (HU-04 J3), y hasta F3
+# ningún brazo lo miraba. Mismo patrón que la confirmación: el código en el atributo y el rótulo
+# visible DENTRO del mismo elemento (la co-ubicación que demostró necesaria el ataque).
+#   transferir-revisar-banco  → data-banco="<código del catálogo>", texto = nombre visible
+#   transferir-revisar-numero → data-numero="<numeroCuenta escrito>"
+#   transferir-revisar-tipo   → data-tipo="<CORRIENTE|AHORRO>", texto = «Corriente»/«Ahorro»
+transferir-revisar-banco
+transferir-revisar-numero
+transferir-revisar-tipo

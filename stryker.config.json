@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment_m5": "M5: cobertura de mutacion >= 70 % SOLO sobre src/domain/. No sobre todo el repo: el dominio es el unico codigo donde un mutante sobreviviente significa plata mal contada.",
+  "_comment_runner": "testRunner=command, NO vitest. El vitest-runner 10.0.0 no activa los mutantes de runtime bajo Vitest 5.0.0 (su inject() no llega al setup): reportaba 21,62 % en money.ts donde el runner real mide 91,89 %. Un arnes que no puede ver el mutante lo declara sobreviviente.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": { "command": "npm run test:domain" },
+  "mutate": ["src/domain/**/*.ts", "!src/domain/**/*.spec.ts"],
+  "reporters": ["html", "clear-text", "progress"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "coverageAnalysis": "off",
+  "timeoutMS": 20000,
+  "thresholds": { "high": 80, "low": 70, "break": 70 }
+}

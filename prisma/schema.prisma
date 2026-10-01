@@ -1,0 +1,258 @@
+// Esquema de zeroFeeBank — S-04. Ver specs/S-04-esquema.md.
+//
+// Dos reglas mandan sobre este archivo:
+//   D1 · el dinero es BIGINT en centavos, nunca coma flotante ni Decimal implícito.
+//   D3 · el ledger es append-only; el esquema no puede expresarlo, así que la migración
+//        de esta unidad añade a mano el rol sin privilegio y el trigger. Si lees este
+//        archivo buscando el append-only, está en prisma/migrations/*/migration.sql.
+//
+// Prisma 7: la URL no vive acá (prisma.config.ts + el adapter de src/infra).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Persona que entra al sistema. S-04 sólo pone la tabla; el registro y el login son S-08.
+model Usuario {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  creadoEn     DateTime @map("creado_en")
+
+  /// S-14 · datos de contacto (ParaBank «Update Contact Info»). Los siete son NULLABLE en el
+  /// esquema y OBLIGATORIOS en el PUT, y no es una contradicción: S-08 registra al cliente
+  /// sin pedirlos, así que «todavía no los completó» es un estado real del sistema y tiene
+  /// que poder representarse. Un NOT NULL con default '' confundiría ese estado con «los
+  /// completó en blanco», y además rompería a los cuatro sitios que hoy crean usuarios.
+  /// Las longitudes son las que fija specs/S-14 § 3 y se validan en el borde, no acá:
+  /// una columna corta convertiría un 400 con código tipado (C5) en un 500 de Postgres.
+  nombre       String?
+  apellido     String?
+  direccion    String?
+  ciudad       String?
+  estado       String?
+  codigoPostal String? @map("codigo_postal")
+  telefono     String?
+
+  cuentas                 Cuenta[]
+  pagos                   Pago[]
+  transferenciasOtroBanco TransferenciaOtroBanco[]
+
+  @@map("usuario")
+}
+
+enum TipoCuenta {
+  CORRIENTE
+  AHORRO
+  /// Contrapartida interna (caja, mundo exterior). Sin ella, un depósito externo
+  /// dejaría la suma global del ledger distinta de cero y rompería I2.
+  SISTEMA
+  /// S-16 · la cuenta que abre un préstamo aprobado: saldo = monto contra la cuenta de sistema
+  /// PRESTAMOS. Se usa como cualquier cuenta del titular (N4), pero NO suma a los fondos
+  /// disponibles de la regla de aprobación (V3). POST /cuentas no la abre: sólo CORRIENTE.
+  PRESTAMO
+
+  @@map("tipo_cuenta")
+}
+
+/// El saldo NO es una columna: se deriva de la suma de sus movimientos (D2).
+/// Si un día aparece una columna `saldo` acá, es un defecto, no una optimización.
+model Cuenta {
+  id                      String     @id @default(uuid()) @db.Uuid
+  tipo                    TipoCuenta
+  /// Nulo sólo para las cuentas de tipo SISTEMA, que no tienen titular.
+  titularId               String?    @map("titular_id") @db.Uuid
+  /// Etiqueta estable de las cuentas de sistema (p. ej. "CAJA"). Nula en las de cliente.
+  codigo                  String?    @unique
+  /// Cuánto puede bajar de cero esta cuenta. 0 = no puede: es la ausencia de sobregiro,
+  /// no una regla de negocio inventada (ver spec § Constantes).
+  limiteSobregiroCentavos BigInt     @default(0) @map("limite_sobregiro_centavos")
+  creadaEn                DateTime   @map("creada_en")
+
+  titular                 Usuario?                 @relation(fields: [titularId], references: [id], onDelete: Restrict)
+  movimientos             Movimiento[]
+  boletas                 Boleta[]
+  pagos                   Pago[]
+  transferenciasOtroBanco TransferenciaOtroBanco[]
+
+  @@index([titularId])
+  @@map("cuenta")
+}
+
+/// Agrupador de partida doble: la suma de los montos de sus movimientos es exactamente 0 (D2).
+/// El esquema no puede imponer esa suma; la impone el dominio (assertBalanceada) y la vigila I1.
+model Transaccion {
+  id       String   @id @db.Uuid
+  /// Etiqueta libre del origen del asiento ("TRANSFERENCIA", "EMISION_BOLETA"). No es un enum
+  /// todavía: cerrar el conjunto antes de tener los casos de uso sería adivinar.
+  concepto String
+  creadaEn DateTime @map("creada_en")
+
+  movimientos            Movimiento[]
+  boletasEmitidas        Boleta[]                @relation("BoletaEmision")
+  boletasCerradas        Boleta[]                @relation("BoletaCierre")
+  pago                   Pago?
+  transferenciaOtroBanco TransferenciaOtroBanco?
+
+  @@map("transaccion")
+}
+
+/// EL LIBRO MAYOR. Append-only por permiso y por trigger (ver migración).
+/// Sin `actualizadoEn` a propósito: una columna que se actualiza sola en una tabla que
+/// nunca se actualiza es una contradicción escrita en el esquema.
+model Movimiento {
+  id            String   @id @default(uuid()) @db.Uuid
+  transaccionId String   @map("transaccion_id") @db.Uuid
+  cuentaId      String   @map("cuenta_id") @db.Uuid
+  /// Centavos. El signo lo pone el tipo de asiento, no el input del usuario (D6).
+  montoCentavos BigInt   @map("monto_centavos")
+  creadoEn      DateTime @map("creado_en")
+
+  transaccion Transaccion @relation(fields: [transaccionId], references: [id], onDelete: Restrict)
+  cuenta      Cuenta      @relation(fields: [cuentaId], references: [id], onDelete: Restrict)
+
+  @@index([cuentaId])
+  @@index([transaccionId])
+  @@map("movimiento")
+}
+
+/// S-15 · el pago a un tercero EXTERNO al sistema (Bill Pay).
+///
+/// Los siete campos del beneficiario son TEXTO del propio pago, sin mantenedor ni tabla
+/// detrás (decisión del humano N1, 2026-09-09). Es el mismo patrón que Boleta: el
+/// beneficiario de una boleta tampoco es un usuario del sistema. La alternativa —una
+/// entidad `payee` con su CRUD— se ofreció y se descartó.
+///
+/// `cuentaBeneficiario` es TEXTO OPACO, no un uuid ni una cuenta de este sistema (J9): el
+/// destino vive fuera. Comprobar que exista convertiría el pago en una transferencia
+/// interna, que es justo la opción que N2 descartó.
+///
+/// NO hay columna de monto ni de estado a propósito. El monto se deriva del asiento —el
+/// saldo y los montos viven en el ledger (D2), y una segunda copia acá sería una segunda
+/// fuente de verdad que se puede desincronizar—. Y no hay estado porque un pago no tiene
+/// máquina de estados: se ejecuta o no se escribe (J11).
+model Pago {
+  id             String @id @db.Uuid
+  /// El asiento que movió la plata. Uno a uno: sin transacción no hay pago (J11).
+  transaccionId  String @unique @map("transaccion_id") @db.Uuid
+  cuentaOrigenId String @map("cuenta_origen_id") @db.Uuid
+  /// Denormalizado a propósito: el titular sale del token al crear (J3) y esta columna es
+  /// lo que hace barato y directo el filtro de `GET /pagos` (V5). La titularidad real la
+  /// sigue definiendo `cuenta.titular_id`; ésta es una copia de lectura.
+  titularId      String @map("titular_id") @db.Uuid
+
+  beneficiarioNombre       String @map("beneficiario_nombre")
+  beneficiarioDireccion    String @map("beneficiario_direccion")
+  beneficiarioCiudad       String @map("beneficiario_ciudad")
+  beneficiarioEstado       String @map("beneficiario_estado")
+  beneficiarioCodigoPostal String @map("beneficiario_codigo_postal")
+  beneficiarioTelefono     String @map("beneficiario_telefono")
+  cuentaBeneficiario       String @map("cuenta_beneficiario")
+
+  pagadoEn DateTime @map("pagado_en")
+
+  transaccion  Transaccion @relation(fields: [transaccionId], references: [id], onDelete: Restrict)
+  cuentaOrigen Cuenta      @relation(fields: [cuentaOrigenId], references: [id], onDelete: Restrict)
+  titular      Usuario     @relation(fields: [titularId], references: [id], onDelete: Restrict)
+
+  @@index([titularId])
+  @@index([cuentaOrigenId])
+  @@map("pago")
+}
+
+/// S-22 · la transferencia a OTRO banco (HU-01 V5–V6). Ver specs/S-22-otros-bancos.md § 4.
+///
+/// Mismo patrón que Pago: el destino vive fuera del banco, así que banco, número y tipo son
+/// TEXTO histórico del documento (R5, J4, J6) y la plata va a la cuenta de sistema
+/// OTROS_BANCOS (J10). `banco` y `tipoCuenta` son texto y no enums: el catálogo vive en un
+/// solo lugar (src/domain), y un enum acá sería la segunda copia que se desincroniza.
+/// `numeroCuenta` es texto porque un 0 a la izquierda es parte del número (J6).
+///
+/// Sin monto (D2: vive en el ledger, y el tope se suma desde el ledger) y sin estado (J7).
+model TransferenciaOtroBanco {
+  id             String   @id @db.Uuid
+  transaccionId  String   @unique @map("transaccion_id") @db.Uuid
+  cuentaOrigenId String   @map("cuenta_origen_id") @db.Uuid
+  /// Copia de lectura del titular, como en Pago: la titularidad real es cuenta.titular_id.
+  titularId      String   @map("titular_id") @db.Uuid
+  banco          String
+  numeroCuenta   String   @map("numero_cuenta")
+  tipoCuenta     String   @map("tipo_cuenta")
+  realizadaEn    DateTime @map("realizada_en")
+
+  transaccion  Transaccion @relation(fields: [transaccionId], references: [id], onDelete: Restrict)
+  cuentaOrigen Cuenta      @relation(fields: [cuentaOrigenId], references: [id], onDelete: Restrict)
+  titular      Usuario     @relation(fields: [titularId], references: [id], onDelete: Restrict)
+
+  @@index([titularId])
+  @@index([cuentaOrigenId])
+  @@map("transferencia_otro_banco")
+}
+
+/// Los cuatro estados son copia textual del tipo `Estado` de src/domain/boleta/boleta.ts.
+/// VENCIDA es derivada del reloj (estadoEn); se persiste sólo si algún proceso la materializa.
+enum EstadoBoleta {
+  VIGENTE
+  COBRADA
+  VENCIDA
+  DEVUELTA
+
+  @@map("estado_boleta")
+}
+
+/// El documento, no sólo la máquina de estados. Las columnas de abajo son S-09: una boleta
+/// de garantía es un instrumento formal a favor de un tercero, y sin beneficiario ni glosa
+/// no se distingue de una retención cualquiera. Los datos del beneficiario y de quien retira
+/// son TEXTO del documento: no hay mantenedor ni usuario detrás (decisión del humano,
+/// 2026-09-07). El RUT se valida en el dominio antes de llegar acá.
+model Boleta {
+  id            String       @id @db.Uuid
+  cuentaId      String       @map("cuenta_id") @db.Uuid
+  montoCentavos BigInt       @map("monto_centavos")
+  estado        EstadoBoleta
+  emitidaEn     DateTime     @map("emitida_en")
+  venceEn       DateTime     @map("vence_en")
+
+  /// Normalizado (sin puntos, con guion, DV en mayúscula): "12345678-5".
+  beneficiarioRut    String @map("beneficiario_rut")
+  beneficiarioNombre String @map("beneficiario_nombre")
+  /// La descripción de la obligación que la boleta garantiza. Va impresa en el documento.
+  glosa              String
+  /// Quién podrá retirar. Se fija AL EMITIR y cobrar exige que el RUT presentado coincida.
+  retiradorRut       String @map("retirador_rut")
+  retiradorNombre    String @map("retirador_nombre")
+
+  /// La traza contra el ledger, y no es adorno: los conceptos son genéricos y dos boletas del
+  /// mismo monto sobre la misma cuenta serían indistinguibles. Sin esta columna, un descuadre
+  /// entre el documento y el libro mayor no se puede diagnosticar (Pilar 6).
+  transaccionEmisionId String  @map("transaccion_emision_id") @db.Uuid
+  /// El asiento que la cerró: cobro, vencimiento o devolución. Nulo mientras está VIGENTE.
+  transaccionCierreId  String? @map("transaccion_cierre_id") @db.Uuid
+
+  cuenta             Cuenta       @relation(fields: [cuentaId], references: [id], onDelete: Restrict)
+  transaccionEmision Transaccion  @relation("BoletaEmision", fields: [transaccionEmisionId], references: [id], onDelete: Restrict)
+  transaccionCierre  Transaccion? @relation("BoletaCierre", fields: [transaccionCierreId], references: [id], onDelete: Restrict)
+
+  @@index([cuentaId])
+  @@map("boleta")
+}
+
+/// D5 · idempotencia. La clave se persiste CON su resultado: un reintento devuelve la misma
+/// respuesta sin volver a ejecutar. El caso de uso que la usa es S-06.
+model ClaveIdempotencia {
+  clave          String   @id
+  /// Método y ruta del POST, para que la misma clave en dos endpoints distintos no colisione.
+  endpoint       String
+  /// Huella del cuerpo original: la misma clave con un cuerpo distinto es un error del cliente,
+  /// no una repetición, y hay que poder distinguirlo.
+  huellaPeticion String   @map("huella_peticion")
+  estadoHttp     Int      @map("estado_http")
+  respuesta      Json
+  creadaEn       DateTime @default(now()) @map("creada_en")
+
+  @@map("clave_idempotencia")
+}

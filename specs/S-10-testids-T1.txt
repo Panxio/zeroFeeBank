@@ -1,0 +1,29 @@
+# Contrato data-testid de S-10 · T1 (21). Versionado: la lista del check por ausencia viaja con él.
+# Fuente: specs/S-10-catalogo.md § 6 (v1) filtrada al alcance de specs/S-10-T1-acceso.md.
+#
+# REGISTRO DE CAMBIOS
+#   - se suma aviso-simulacion (franja de aviso de S-33 F1, una por <main>); el check R1 de t1 es exacto sobre la portada.
+#
+# Anfitriona (8)
+portada
+portada-bruma
+login-abrir
+login-popover
+login-marco
+usuario-email
+salir
+aviso-simulacion
+# Marco, documento de otro origen (13)
+login-form
+login-email
+login-password
+login-enviar
+login-error
+ir-registro
+registro-form
+registro-email
+registro-password
+registro-enviar
+registro-error
+registro-exito
+ir-login

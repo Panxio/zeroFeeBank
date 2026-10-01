@@ -1,0 +1,47 @@
+# Contrato de data-testid de S-17-pagos (fase F1b).
+# C3: esto es un contrato versionado, no un detalle de implementación. Renombrar uno rompe
+# todas las suites a la vez; se cambia con nota en el registro de cambios de abajo.
+# El check corre sobre el ARTEFACTO RENDERIZADO (brazo N3), nunca sobre el código fuente.
+# El diálogo de confirmación REUSA `confirmar-dialogo`, `confirmar-cancelar` y
+# `confirmar-aceptar` de S-10 T3 (zfb-dialogo): no se listan acá, ya están en T3/T4.
+#
+# REGISTRO DE CAMBIOS
+#   nacimiento de la lista. `nav-pagos` es entrada PROPIA de la barra (JP1),
+#          hermana de `nav-transferir`, no va en el submenú de Cuentas.
+#
+# Filas: `pago-fila` y sus cinco celdas se repiten una vez por pago (brazo N3 lo admite).
+nav-pagos
+pagos-region
+pagos-cuentas-error
+pagos-cuentas-reintentar
+pagos-sin-cuentas
+pagos-form
+pagos-origen
+pagos-monto
+pagos-beneficiario-nombre
+pagos-beneficiario-direccion
+pagos-beneficiario-ciudad
+pagos-beneficiario-estado
+pagos-beneficiario-codigo-postal
+pagos-beneficiario-telefono
+pagos-cuenta-beneficiario
+pagos-enviar
+pagos-enviando
+pagos-exito
+pagos-pago-id
+pagos-repetido
+pagos-error
+pagos-codigo-error
+pagos-sin-respuesta
+pagos-reintentar
+pagos-lista
+pagos-lista-cargando
+pagos-lista-error
+pagos-vacio
+pagos-tabla
+pago-fila
+pago-fecha
+pago-origen
+pago-beneficiario
+pago-cuenta-beneficiario
+pago-monto

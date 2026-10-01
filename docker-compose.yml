@@ -1,0 +1,25 @@
+# Postgres local para desarrollo y para el sistema bajo prueba.
+# Las credenciales de acá son de este contenedor local y de ningún otro entorno:
+# ver specs/S-00-esqueleto.md § Constantes.
+services:
+  db:
+    image: postgres:18-alpine   # mayor fijada: 'latest' cambia bajo los pies
+    container_name: zerofeebank-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zerofeebank
+      POSTGRES_PASSWORD: zerofeebank_local
+      POSTGRES_DB: zerofeebank
+    ports:
+      - "127.0.0.1:5432:5432"   # sólo en este equipo: la contraseña del contenedor es pública (README, «Security notes»)
+    volumes:
+      # PG18 monta la raíz, no el subdirectorio /data (docker-library/postgres#1259)
+      - zerofeebank-pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zerofeebank -d zerofeebank"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  zerofeebank-pgdata:

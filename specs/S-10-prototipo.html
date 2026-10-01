@@ -1,0 +1,637 @@
+<title>zeroFeeBank S-10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;800&display=swap">
+<style>
+:root {
+  --ground: #EEF2F0;
+  --surface: #FFFFFF;
+  --sunken: #E3E9E6;
+  --ink: #14201C;
+  --muted: #56655F;
+  --line: #CFD9D4;
+  --accent: #0B6B57;
+  --accent-hover: #095A49;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D9EDE6;
+  --danger: #A8322A;
+  --danger-soft: #F9E4E1;
+  --ok: #1D6B3A;
+  --review: #8A5A00;
+  --review-soft: #FFF5DE;
+  --review-line: #E7CF98;
+  --tag-bg: #8A5A00;
+  --tag-ink: #FFFFFF;
+  --shadow: 0 1px 2px rgb(20 32 28 / .06), 0 8px 24px rgb(20 32 28 / .06);
+  --sans: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0E1412; --surface: #161E1B; --sunken: #1D2724; --ink: #E3EAE7; --muted: #97A7A0;
+    --line: #2C3935; --accent: #55C2A5; --accent-hover: #6FD1B6; --accent-ink: #06231C;
+    --accent-soft: #173A31; --danger: #F08A80; --danger-soft: #3A1C19; --ok: #7FD49A;
+    --review: #F0C060; --review-soft: #2A2110; --review-line: #5A4520; --tag-bg: #F0C060; --tag-ink: #221700;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .25);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0E1412; --surface: #161E1B; --sunken: #1D2724; --ink: #E3EAE7; --muted: #97A7A0;
+  --line: #2C3935; --accent: #55C2A5; --accent-hover: #6FD1B6; --accent-ink: #06231C;
+  --accent-soft: #173A31; --danger: #F08A80; --danger-soft: #3A1C19; --ok: #7FD49A;
+  --review: #F0C060; --review-soft: #2A2110; --review-line: #5A4520; --tag-bg: #F0C060; --tag-ink: #221700;
+  --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px rgb(0 0 0 / .25);
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.5; }
+.marco { padding-inline: 20px; padding-block: 24px 48px; max-width: 1180px; margin-inline: auto; }
+.disposicion { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+@media (max-width: 980px) { .disposicion { grid-template-columns: minmax(0, 1fr); } }
+
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h1 { font-size: 26px; font-weight: 800; letter-spacing: -.01em; line-height: 1.2; }
+h2 { font-size: 17px; font-weight: 600; }
+p { margin: 0; }
+.mono { font-family: var(--mono); font-size: .92em; }
+.suave { color: var(--muted); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- la app ---------- */
+.app { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); min-height: 560px; overflow: hidden; }
+
+.marca { font-weight: 800; font-size: 18px; letter-spacing: -.02em; display: inline-flex; align-items: baseline; gap: 0; }
+.marca b { color: var(--accent); font-weight: 800; }
+.marca span { font-weight: 400; }
+
+.barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 22px; border-bottom: 1px solid var(--line); }
+.barra nav { display: flex; gap: 4px; margin-right: auto; }
+.pestana { background: none; border: 0; padding: 7px 12px; border-radius: 6px; cursor: pointer; color: var(--muted); font-weight: 500; }
+.pestana:hover { color: var(--ink); background: var(--sunken); }
+.pestana[aria-current="page"] { color: var(--ink); background: var(--accent-soft); font-weight: 600; }
+.quien { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.quien .mono { color: var(--muted); }
+
+.contenido { padding: 28px 22px 36px; display: grid; gap: 22px; }
+.encabezado { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.encabezado p { margin-top: 4px; }
+
+.btn { font-family: var(--sans); display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 7px; padding: 10px 16px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+.btn-primario { background: var(--accent); color: var(--accent-ink); }
+.btn-primario:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-secundario { background: var(--surface); border-color: var(--line); }
+.btn-secundario:hover:not(:disabled) { background: var(--sunken); }
+.btn:disabled { opacity: .6; cursor: progress; }
+.btn-chico { padding: 4px 9px; font-size: 13px; font-weight: 500; }
+.enlace { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+.giro { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: giro .7s linear infinite; }
+@keyframes giro { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .giro, .esqueleto { animation: none !important; } }
+
+/* formularios */
+.campo { display: grid; gap: 6px; }
+.campo label, .campo legend { font-weight: 600; font-size: 14px; }
+.campo input, .campo select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
+.campo input:focus, .campo select:focus { border-color: var(--accent); }
+.campo .ayuda { font-size: 13px; color: var(--muted); }
+.con-prefijo { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; background: var(--surface); }
+.con-prefijo span { padding: 10px 12px; background: var(--sunken); color: var(--muted); font-weight: 600; border-right: 1px solid var(--line); }
+.con-prefijo input { border: 0; border-radius: 0; font-family: var(--mono); }
+.con-prefijo:focus-within { border-color: var(--accent); }
+fieldset.campo { border: 0; padding: 0; margin: 0; }
+.opciones { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 4px; }
+.opcion { display: flex; align-items: center; gap: 10px; padding: 11px 14px; white-space: nowrap; border: 1px solid var(--line); border-radius: 7px; cursor: pointer; font-weight: 500; font-size: 14px; }
+.opcion:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opcion input { accent-color: var(--accent); }
+input.mono-input { font-family: var(--mono); font-size: 14px; }
+
+.aviso { border-radius: 7px; padding: 12px 14px; display: grid; gap: 4px; font-size: 14px; }
+.aviso-error { background: var(--danger-soft); color: var(--danger); }
+.aviso-error strong { color: var(--danger); }
+.aviso-info { background: var(--accent-soft); }
+.aviso .codigo { font-family: var(--mono); font-size: 12px; opacity: .85; }
+
+/* acceso */
+.acceso { display: grid; place-items: center; padding: 48px 20px; min-height: 560px; }
+.tarjeta-acceso { width: 100%; max-width: 380px; display: grid; gap: 20px; }
+.tarjeta-acceso form { display: grid; gap: 16px; }
+.tarjeta-acceso .pie { font-size: 14px; color: var(--muted); }
+
+/* resumen */
+.tabla-marco { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 10px 16px; background: var(--sunken); }
+td { padding: 16px; border-top: 1px solid var(--line); vertical-align: middle; }
+th.num, td.num { text-align: right; }
+.cuenta-tipo { font-weight: 600; }
+.cuenta-id { display: flex; align-items: center; gap: 8px; margin-top: 2px; color: var(--muted); font-family: var(--mono); font-size: 12.5px; }
+.monto { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+.monto .moneda { font-size: .72em; color: var(--muted); font-weight: 500; margin-right: 2px; }
+.monto .cents { font-size: .72em; }
+td .monto { font-size: 20px; }
+.esqueleto { height: 14px; border-radius: 4px; background: var(--sunken); animation: pulso 1.2s ease-in-out infinite; }
+@keyframes pulso { 50% { opacity: .45; } }
+.vacio { border: 1px dashed var(--line); border-radius: 8px; padding: 32px 20px; text-align: center; display: grid; gap: 6px; }
+
+/* transferir */
+.transferencia { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; max-width: 520px; }
+.recibo { max-width: 520px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.recibo-cabeza { padding: 20px; background: var(--accent-soft); display: grid; gap: 6px; }
+.recibo-cabeza .monto { font-size: 32px; }
+.recibo dl { margin: 0; padding: 8px 20px 16px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 16px; font-size: 14px; }
+.recibo dt { color: var(--muted); }
+.recibo dd { margin: 0; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.recibo .acciones { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px 20px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--review-soft); color: var(--review); border: 1px solid var(--review-line); width: fit-content; }
+
+/* ---------- mesa del revisor ---------- */
+.mesa { background: var(--review-soft); border: 1px dashed var(--review-line); border-radius: 10px; padding: 18px; display: grid; gap: 18px; font-size: 14px; position: sticky; top: 16px; }
+@media (max-width: 980px) { .mesa { position: static; } }
+.mesa h2 { color: var(--review); font-size: 15px; }
+.mesa h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--review); font-weight: 600; margin-bottom: 8px; }
+.mesa .grupo { display: grid; gap: 6px; }
+.mesa label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.mesa input { accent-color: var(--review); }
+.mesa .credencial { font-family: var(--mono); font-size: 12.5px; background: var(--surface); border: 1px solid var(--review-line); border-radius: 6px; padding: 8px 10px; display: grid; gap: 2px; }
+.mesa .btn-secundario { border-color: var(--review-line); }
+.contrato { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-family: var(--mono); font-size: 12px; max-height: 300px; overflow-y: auto; }
+.contrato li { display: flex; gap: 8px; align-items: baseline; }
+.contrato .vista { font-family: var(--sans); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-top: 8px; }
+.contrato .punto { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; transform: translateY(1px); }
+.contrato .presente .punto { background: var(--ok); border-color: var(--ok); }
+.contrato .ausente { color: var(--muted); }
+
+.capa-ids { position: absolute; inset: 0 auto auto 0; pointer-events: none; z-index: 50; }
+.capa-ids .tag { position: absolute; background: var(--tag-bg); color: var(--tag-ink); font-family: var(--mono); font-size: 10.5px; line-height: 1; padding: 3px 5px; border-radius: 3px; white-space: nowrap; transform: translateY(-100%); }
+.ver-ids [data-testid] { outline: 1.5px dashed var(--review); outline-offset: 1px; }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+
+<div class="marco">
+  <div class="disposicion">
+    <div class="app" id="app"></div>
+
+    <aside class="mesa" data-mesa aria-labelledby="t-mesa">
+      <div class="grupo">
+        <h2 id="t-mesa">Mesa del revisor</h2>
+        <p class="suave">No es parte de la app. Simula el API de zeroFeeBank con los contratos de S-08, S-12 y S-18 para ver cada estado sin levantar nada.</p>
+      </div>
+
+      <div class="grupo">
+        <h3>Datos de ejemplo</h3>
+        <div class="credencial"><span>ana@ejemplo.cl</span><span>una-clave-larga</span><span class="suave">2 cuentas corrientes</span></div>
+        <div class="credencial"><span>beto@ejemplo.cl · otra persona</span><span id="id-beto"></span><span><button type="button" class="btn btn-secundario btn-chico" id="copiar-beto">Copiar id de su cuenta</button></span></div>
+        <button type="button" class="btn btn-secundario btn-chico" id="mesa-reset">Volver al escenario base</button>
+      </div>
+
+      <div class="grupo" role="radiogroup" aria-labelledby="t-lat">
+        <h3 id="t-lat">Latencia del API</h3>
+        <label><input type="radio" name="latencia" id="lat-0" value="0"> Inmediata</label>
+        <label><input type="radio" name="latencia" id="lat-600" value="600" checked> 600 ms</label>
+        <label><input type="radio" name="latencia" id="lat-3000" value="3000"> 3 s (para ver la carga)</label>
+      </div>
+
+      <div class="grupo" role="radiogroup" aria-labelledby="t-prox">
+        <h3 id="t-prox">Próxima llamada</h3>
+        <label><input type="radio" name="proxima" id="prox-normal" value="normal" checked> Normal</label>
+        <label><input type="radio" name="proxima" id="prox-expirado" value="expirado"> Sesión vencida · <span class="mono">TOKEN_EXPIRADO</span></label>
+        <label><input type="radio" name="proxima" id="prox-red" value="red"> Se pierde la respuesta (el banco sí la ejecutó)</label>
+        <p class="suave" style="font-size:13px">Se aplica una vez y vuelve a «Normal».</p>
+      </div>
+
+      <div class="grupo">
+        <h3>Contrato <span class="mono">data-testid</span> · borrador v0</h3>
+        <label><input type="checkbox" id="ver-ids"> Mostrar sobre la pantalla</label>
+        <ul class="contrato" id="contrato"></ul>
+        <p class="suave" style="font-size:13px">● presente en esta pantalla · ○ vive en otra. Al aprobar el prototipo, esta lista se congela y se versiona.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="capa-ids" id="capa-ids" aria-hidden="true"></div>
+
+<script>
+/* ================= Contrato de data-testid (borrador v0) ================= */
+const CONTRATO = {
+  "Acceso": ["login-form", "login-email", "login-password", "login-enviar", "login-error", "sesion-aviso", "ir-registro",
+             "registro-form", "registro-email", "registro-password", "registro-enviar", "registro-error", "registro-exito", "ir-login"],
+  "Estructura": ["nav-resumen", "nav-transferir", "usuario-email", "salir"],
+  "Resumen": ["cuentas-region", "cuentas-cargando", "cuentas-tabla", "cuenta-fila", "cuenta-id", "cuenta-copiar-id", "cuenta-saldo", "cuentas-vacio", "cuentas-error", "cuentas-reintentar", "ir-transferir"],
+  "Transferir": ["transferir-form", "transferir-origen", "transferir-destino-modo-propia", "transferir-destino-modo-otra", "transferir-destino-propia", "transferir-destino-id",
+                 "transferir-monto", "transferir-enviar", "transferir-error", "transferir-sin-respuesta", "transferir-reintentar",
+                 "transferir-exito", "transferir-repetida", "transferir-transaccion-id", "transferir-nueva", "transferir-sin-cuentas"]
+};
+
+/* ================= Dinero: centavos en BigInt, string decimal en el borde ================= */
+function aCentavos(txt) {
+  if (typeof txt !== "string" || !/^\d{1,15}(\.\d{1,2})?$/.test(txt)) return null;
+  const [e, d = ""] = txt.split(".");
+  return BigInt(e) * 100n + BigInt((d + "00").slice(0, 2));
+}
+function aDecimal(c) { return `${c / 100n}.${String(c % 100n).padStart(2, "0")}`; }
+function montoHTML(dec) {
+  const [e, d] = dec.split(".");
+  return `<span class="monto"><span class="moneda">US$</span>${e.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}<span class="cents">,${d}</span></span>`;
+}
+function montoTexto(dec) { const [e, d] = dec.split("."); return `US$ ${e.replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${d}`; }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const corto = id => "···" + id.slice(-4);
+const fecha = iso => new Date(iso).toLocaleDateString("es-CL", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, () => (Math.random() * 16 | 0).toString(16)));
+
+/* ================= API simulado (sólo para el prototipo) ================= */
+const ID_ANA = "5e0c9a4b-1f7d-4c2e-8b3a-6d9f0e2a7c11";
+const ID_BETO = "a7d31f08-2c6b-4e59-9f14-3b8e5c0d6a22";
+const CTA_BETO = "c41b7e92-8d05-4f3a-a6c8-1e2f9b7d4c03";
+function semilla() {
+  return {
+    usuarios: [
+      { id: ID_ANA, email: "ana@ejemplo.cl", password: "una-clave-larga" },
+      { id: ID_BETO, email: "beto@ejemplo.cl", password: "otra-clave-larga" }
+    ],
+    cuentas: [
+      { id: "3f6c2a10-5d4e-4b8a-9c21-0a7e5b1d2f01", titular: ID_ANA, tipo: "CORRIENTE", centavos: 100000n, abiertaEn: "2026-09-01T13:00:00.000Z" },
+      { id: "8b2e4d61-0a9c-4f7e-b315-7c6d2e9a1f02", titular: ID_ANA, tipo: "CORRIENTE", centavos: 25000n, abiertaEn: "2026-09-05T15:30:00.000Z" },
+      { id: CTA_BETO, titular: ID_BETO, tipo: "CORRIENTE", centavos: 5000n, abiertaEn: "2026-09-03T12:00:00.000Z" }
+    ],
+    claves: new Map()
+  };
+}
+let db = semilla();
+const mesa = { latencia: 600, proxima: "normal", verIds: false };
+const espera = ms => new Promise(r => setTimeout(r, ms));
+const err = (status, codigo, mensaje = codigo) => ({ status, body: { codigo, mensaje }, headers: {} });
+const esUUID = s => typeof s === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
+function titularDe(token) {
+  if (!token || !token.startsWith("Bearer ")) return { error: err(401, "TOKEN_AUSENTE") };
+  const u = db.usuarios.find(u => "Bearer tok." + u.id === token);
+  return u ? { u } : { error: err(401, "TOKEN_INVALIDO") };
+}
+const RUTAS = {
+  "POST /auth/registro": ({ cuerpo }) => {
+    const email = typeof cuerpo.email === "string" ? cuerpo.email.trim().toLowerCase() : "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err(400, "EMAIL_INVALIDO");
+    if (typeof cuerpo.password !== "string" || cuerpo.password.length < 8) return err(400, "PASSWORD_DEBIL");
+    if (db.usuarios.some(u => u.email === email)) return err(409, "EMAIL_YA_REGISTRADO");
+    const u = { id: uuid(), email, password: cuerpo.password };
+    db.usuarios.push(u);
+    return { status: 201, body: { id: u.id, email, creadoEn: new Date().toISOString() }, headers: {} };
+  },
+  "POST /auth/login": ({ cuerpo }) => {
+    const email = String(cuerpo.email || "").trim().toLowerCase();
+    const u = db.usuarios.find(u => u.email === email && u.password === cuerpo.password);
+    if (!u) return err(401, "CREDENCIALES_INVALIDAS");
+    return { status: 200, body: { token: "tok." + u.id, tipo: "Bearer", expiraEn: new Date(Date.now() + 3600e3).toISOString() }, headers: {} };
+  },
+  "GET /auth/yo": ({ token }) => {
+    const t = titularDe(token); if (t.error) return t.error;
+    return { status: 200, body: { id: t.u.id, email: t.u.email }, headers: {} };
+  },
+  "GET /cuentas": ({ token }) => {
+    const t = titularDe(token); if (t.error) return t.error;
+    const cuentas = db.cuentas.filter(c => c.titular === t.u.id)
+      .sort((a, b) => a.abiertaEn.localeCompare(b.abiertaEn) || a.id.localeCompare(b.id))
+      .map(c => ({ id: c.id, tipo: c.tipo, saldo: aDecimal(c.centavos), abiertaEn: c.abiertaEn }));
+    return { status: 200, body: { cuentas }, headers: {} };
+  },
+  "POST /transferencias": ({ token, clave, cuerpo }) => {
+    const t = titularDe(token); if (t.error) return t.error;                                   // 1
+    if (!clave) return err(400, "IDEMPOTENCY_KEY_AUSENTE");                                      // 2
+    if (clave.length > 200) return err(400, "IDEMPOTENCY_KEY_INVALIDA");
+    const c = aCentavos(cuerpo.monto);
+    if (c === null || c <= 0n) return err(400, "MONTO_INVALIDO");                                // 3
+    if (cuerpo.origenId === cuerpo.destinoId) return err(400, "MISMA_CUENTA");                   // 4
+    const huella = [t.u.id, cuerpo.origenId, cuerpo.destinoId, aDecimal(c)].join("|");
+    const previa = db.claves.get(clave);
+    if (previa) {
+      if (previa.huella !== huella) return err(409, "IDEMPOTENCY_KEY_REUSADA");
+      return { ...previa.respuesta, headers: { "Idempotency-Replayed": "true" } };
+    }
+    let r;
+    const o = db.cuentas.find(x => x.id === cuerpo.origenId);
+    const d = db.cuentas.find(x => x.id === cuerpo.destinoId);
+    if (!esUUID(cuerpo.origenId) || !esUUID(cuerpo.destinoId)) r = err(404, "CUENTA_NO_ENCONTRADA");   // 5
+    else if (!o || o.titular !== t.u.id) r = err(404, "CUENTA_NO_ENCONTRADA");                           // 6
+    else if (!d) r = err(404, "CUENTA_NO_ENCONTRADA");                                                    // 7
+    else if (o.centavos < c) r = err(409, "FONDOS_INSUFICIENTES");                                        // 8
+    else {
+      o.centavos -= c; d.centavos += c;
+      r = { status: 201, body: { transaccionId: uuid(), origenId: o.id, destinoId: d.id, monto: aDecimal(c) }, headers: {} };
+    }
+    db.claves.set(clave, { huella, respuesta: r });
+    return r;
+  }
+};
+function consumirProxima() { mesa.proxima = "normal"; document.getElementById("prox-normal").checked = true; }
+async function api(metodo, ruta, opts = {}) {
+  await espera(mesa.latencia);
+  const forzada = mesa.proxima;
+  if (forzada === "expirado" && opts.token) { consumirProxima(); return err(401, "TOKEN_EXPIRADO"); }
+  if (forzada === "red") {
+    consumirProxima();
+    if (metodo === "POST" && ruta === "/transferencias") RUTAS[`${metodo} ${ruta}`](opts); // se ejecuta, la respuesta se pierde
+    throw new Error("SIN_RESPUESTA");
+  }
+  return RUTAS[`${metodo} ${ruta}`](opts);
+}
+
+/* ================= Mensajes: la persona lee esto; la suite afirma sobre data-codigo ================= */
+const MENSAJES = {
+  CREDENCIALES_INVALIDAS: "El email o la contraseña no coinciden. Revisa ambos e intenta de nuevo.",
+  EMAIL_INVALIDO: "Ese email no tiene la forma nombre@dominio.cl.",
+  PASSWORD_DEBIL: "La contraseña necesita al menos 8 caracteres.",
+  EMAIL_YA_REGISTRADO: "Ese email ya tiene acceso. Inicia sesión con él.",
+  TOKEN_EXPIRADO: "Tu sesión venció. Vuelve a iniciar sesión para seguir.",
+  TOKEN_INVALIDO: "Tu sesión ya no es válida. Vuelve a iniciar sesión.",
+  TOKEN_AUSENTE: "Necesitas iniciar sesión para ver esto.",
+  MONTO_INVALIDO: "Escribe un monto mayor que cero, con punto para los centavos: 150.00",
+  MISMA_CUENTA: "La cuenta de origen y la de destino son la misma. Elige otra de destino.",
+  CUENTA_NO_ENCONTRADA: "No encontramos esa cuenta. Revisa el id de destino: son 36 caracteres.",
+  FONDOS_INSUFICIENTES: "La cuenta de origen no tiene saldo suficiente para ese monto.",
+  IDEMPOTENCY_KEY_REUSADA: "Esta operación ya se envió con otros datos. Empieza una transferencia nueva."
+};
+const mensaje = codigo => MENSAJES[codigo] || "El banco rechazó la operación.";
+function avisoError(testid, codigo) {
+  return `<div class="aviso aviso-error" role="alert" data-testid="${testid}" data-codigo="${esc(codigo)}"><strong>${esc(mensaje(codigo))}</strong><span class="codigo">${esc(codigo)}</span></div>`;
+}
+
+/* ================= Estado de la app ================= */
+const st = {
+  vista: "login", sesion: null, avisoSesion: null, emailPrevio: "ana@ejemplo.cl", registroOk: null,
+  cuentas: { estado: "cargando", lista: [] },
+  tx: { estado: "editando", error: null, envio: null, recibo: null, repetida: false, modo: "propia" }
+};
+const raiz = document.getElementById("app");
+
+function cerrarSesion(codigo) {
+  st.sesion = null; st.avisoSesion = codigo || null; st.vista = "login"; render();
+}
+function manejaSesion(r) {
+  if (r.status === 401 && ["TOKEN_EXPIRADO", "TOKEN_INVALIDO", "TOKEN_AUSENTE"].includes(r.body.codigo)) { cerrarSesion(r.body.codigo); return true; }
+  return false;
+}
+function ir(vista) {
+  st.vista = vista;
+  if (vista === "transferir" && st.tx.estado !== "enviando") st.tx = { estado: "editando", error: null, envio: null, recibo: null, repetida: false, modo: st.tx.modo };
+  render();
+  if (vista === "resumen" || vista === "transferir") cargarCuentas();
+}
+
+async function cargarCuentas() {
+  st.cuentas.estado = "cargando"; render();
+  try {
+    const r = await api("GET", "/cuentas", { token: "Bearer " + st.sesion.token });
+    if (manejaSesion(r)) return;
+    if (r.status !== 200) { st.cuentas = { estado: "error", lista: [], codigo: r.body.codigo }; }
+    else st.cuentas = { estado: "listo", lista: r.body.cuentas };
+  } catch { st.cuentas = { estado: "error", lista: [], codigo: "SIN_RESPUESTA" }; }
+  if (st.sesion) render();
+}
+
+/* ================= Vistas ================= */
+const MARCA = `<span class="marca" aria-label="zeroFeeBank"><b>zero</b>Fee<span>Bank</span></span>`;
+
+function vistaLogin() {
+  return `<div class="acceso"><section class="tarjeta-acceso" aria-labelledby="t-login">
+    ${MARCA}
+    <div><h1 id="t-login">Inicia sesión</h1><p class="suave">Entra con el email con que te registraste.</p></div>
+    ${st.avisoSesion ? `<p class="aviso aviso-info" role="status" data-testid="sesion-aviso" data-codigo="${st.avisoSesion}">${esc(mensaje(st.avisoSesion))}</p>` : ""}
+    ${st.registroOk ? `<p class="aviso aviso-info" role="status" data-testid="registro-exito">Listo: ${esc(st.registroOk)} ya tiene acceso. Ahora inicia sesión.</p>` : ""}
+    <form data-testid="login-form" id="login-form" novalidate>
+      <div class="campo"><label for="login-email">Email</label>
+        <input id="login-email" data-testid="login-email" type="email" autocomplete="username" required value="${esc(st.emailPrevio)}"></div>
+      <div class="campo"><label for="login-password">Contraseña</label>
+        <input id="login-password" data-testid="login-password" type="password" autocomplete="current-password" required></div>
+      <div id="login-error-lugar"></div>
+      <button class="btn btn-primario" type="submit" data-testid="login-enviar" id="login-enviar">Entrar</button>
+    </form>
+    <p class="pie">¿Primera vez? <button type="button" class="enlace" data-testid="ir-registro" id="ir-registro">Crea tu acceso</button></p>
+  </section></div>`;
+}
+function vistaRegistro() {
+  return `<div class="acceso"><section class="tarjeta-acceso" aria-labelledby="t-reg">
+    ${MARCA}
+    <div><h1 id="t-reg">Crea tu acceso</h1><p class="suave">Después de crearlo, inicias sesión con los mismos datos.</p></div>
+    <form data-testid="registro-form" id="registro-form" novalidate>
+      <div class="campo"><label for="registro-email">Email</label>
+        <input id="registro-email" data-testid="registro-email" type="email" autocomplete="username" required></div>
+      <div class="campo"><label for="registro-password">Contraseña</label>
+        <input id="registro-password" data-testid="registro-password" type="password" autocomplete="new-password" required aria-describedby="ayuda-pass">
+        <span class="ayuda" id="ayuda-pass">Al menos 8 caracteres.</span></div>
+      <div id="registro-error-lugar"></div>
+      <button class="btn btn-primario" type="submit" data-testid="registro-enviar" id="registro-enviar">Crear acceso</button>
+    </form>
+    <p class="pie">¿Ya tienes acceso? <button type="button" class="enlace" data-testid="ir-login" id="ir-login">Inicia sesión</button></p>
+  </section></div>`;
+}
+function barra() {
+  const pest = (v, t) => `<button type="button" class="pestana" data-testid="nav-${v}" data-ir="${v}" ${st.vista === v ? 'aria-current="page"' : ""}>${t}</button>`;
+  return `<header class="barra">${MARCA}
+    <nav aria-label="Principal">${pest("resumen", "Cuentas")}${pest("transferir", "Transferir")}</nav>
+    <div class="quien"><span class="mono" data-testid="usuario-email">${esc(st.sesion.email)}</span>
+      <button type="button" class="btn btn-secundario btn-chico" data-testid="salir" id="salir">Salir</button></div>
+  </header>`;
+}
+function vistaResumen() {
+  const c = st.cuentas;
+  let cuerpo;
+  if (c.estado === "cargando") {
+    cuerpo = `<div data-testid="cuentas-cargando"><span class="solo-lector">Cargando cuentas…</span>
+      <div class="tabla-marco"><table aria-hidden="true"><tbody>${[1, 2].map(() => `<tr><td><div class="esqueleto" style="width:60%"></div></td><td><div class="esqueleto" style="width:70%"></div></td><td><div class="esqueleto" style="width:50%;margin-left:auto"></div></td></tr>`).join("")}</tbody></table></div></div>`;
+  } else if (c.estado === "error") {
+    cuerpo = `<div class="aviso aviso-error" role="alert" data-testid="cuentas-error" data-codigo="${esc(c.codigo)}"><strong>No pudimos traer tus cuentas.</strong><span class="codigo">${esc(c.codigo)}</span>
+      <div><button type="button" class="btn btn-secundario btn-chico" data-testid="cuentas-reintentar" id="cuentas-reintentar">Reintentar</button></div></div>`;
+  } else if (!c.lista.length) {
+    cuerpo = `<div class="vacio" data-testid="cuentas-vacio"><strong>Todavía no tienes cuentas abiertas.</strong><span class="suave">Cuando abras una, aparecerá aquí con su saldo.</span></div>`;
+  } else {
+    cuerpo = `<div class="tabla-marco"><table data-testid="cuentas-tabla"><caption class="solo-lector">Tus cuentas y su saldo</caption>
+      <thead><tr><th scope="col">Cuenta</th><th scope="col">Abierta el</th><th scope="col" class="num">Saldo</th></tr></thead>
+      <tbody>${c.lista.map(x => `<tr data-testid="cuenta-fila" data-cuenta-id="${x.id}">
+        <td><div class="cuenta-tipo">Cuenta corriente</div>
+          <div class="cuenta-id"><span data-testid="cuenta-id">${x.id}</span>
+          <button type="button" class="btn btn-secundario btn-chico" data-testid="cuenta-copiar-id" data-copiar="${x.id}" aria-label="Copiar id de la cuenta ${corto(x.id)}">Copiar</button></div></td>
+        <td>${fecha(x.abiertaEn)}</td>
+        <td class="num" data-testid="cuenta-saldo" data-monto="${x.saldo}">${montoHTML(x.saldo)}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  return `<main class="contenido" aria-labelledby="t-res">
+    <div class="encabezado"><div><h1 id="t-res">Tus cuentas</h1><p class="suave">El saldo se calcula desde tus movimientos; no es un número que se edite.</p></div>
+      <button type="button" class="btn btn-primario" data-testid="ir-transferir" data-ir="transferir">Transferir</button></div>
+    <section data-testid="cuentas-region" data-estado="${c.estado}" aria-busy="${c.estado === "cargando"}" aria-live="polite">${cuerpo}</section>
+  </main>`;
+}
+function vistaTransferir() {
+  const t = st.tx, c = st.cuentas;
+  let cuerpo;
+  if (c.estado === "cargando" && t.estado !== "hecha") {
+    cuerpo = `<div data-testid="cuentas-cargando" class="transferencia"><span class="solo-lector">Cargando tus cuentas…</span><div class="esqueleto" style="height:40px"></div><div class="esqueleto" style="height:40px"></div></div>`;
+  } else if (c.estado === "listo" && !c.lista.length) {
+    cuerpo = `<div class="vacio" data-testid="transferir-sin-cuentas"><strong>Necesitas una cuenta para transferir.</strong><span class="suave">Todavía no tienes cuentas abiertas.</span></div>`;
+  } else if (t.estado === "hecha") {
+    const r = t.recibo;
+    cuerpo = `<section class="recibo" data-testid="transferir-exito" role="status" aria-labelledby="t-rec">
+      <div class="recibo-cabeza"><h2 id="t-rec">Transferencia hecha</h2>${montoHTML(r.monto)}
+        ${t.repetida ? `<span class="chip" data-testid="transferir-repetida">Respuesta repetida: el banco no la volvió a ejecutar</span>` : ""}</div>
+      <dl><dt>Origen</dt><dd>${r.origenId}</dd><dt>Destino</dt><dd>${r.destinoId}</dd>
+        <dt>N° de operación</dt><dd data-testid="transferir-transaccion-id">${r.transaccionId}</dd></dl>
+      <div class="acciones"><button type="button" class="btn btn-primario" data-testid="transferir-nueva" id="transferir-nueva">Nueva transferencia</button>
+        <button type="button" class="btn btn-secundario" data-ir="resumen">Ver cuentas</button></div></section>`;
+  } else {
+    const propias = c.lista || [];
+    const v = t.envio ? t.envio.cuerpo : {};
+    const origen = v.origenId || (propias[0] && propias[0].id) || "";
+    const opt = (x, sel) => `<option value="${x.id}" ${x.id === sel ? "selected" : ""}>Corriente ${corto(x.id)} · ${montoTexto(x.saldo)}</option>`;
+    const destinosPropios = propias.filter(x => x.id !== origen);
+    const enviando = t.estado === "enviando";
+    cuerpo = `<form class="transferencia" data-testid="transferir-form" id="transferir-form" data-estado="${t.estado}" aria-busy="${enviando}" novalidate>
+      <div class="campo"><label for="transferir-origen">Origen</label>
+        <select id="transferir-origen" data-testid="transferir-origen" ${enviando ? "disabled" : ""}>${propias.map(x => opt(x, origen)).join("")}</select></div>
+      <fieldset class="campo"><legend>Destino</legend>
+        <div class="opciones">
+          <label class="opcion"><input type="radio" name="modo" id="modo-propia" value="propia" data-testid="transferir-destino-modo-propia" ${t.modo === "propia" ? "checked" : ""} ${enviando ? "disabled" : ""}> Mis cuentas</label>
+          <label class="opcion"><input type="radio" name="modo" id="modo-otra" value="otra" data-testid="transferir-destino-modo-otra" ${t.modo === "otra" ? "checked" : ""} ${enviando ? "disabled" : ""}> Otras cuentas</label>
+        </div>
+        ${t.modo === "propia"
+          ? (destinosPropios.length
+              ? `<label for="transferir-destino-propia" class="solo-lector">Cuenta propia de destino</label><select id="transferir-destino-propia" data-testid="transferir-destino-propia" ${enviando ? "disabled" : ""}>${destinosPropios.map(x => opt(x, v.destinoId)).join("")}</select>`
+              : `<p class="ayuda">No tienes otra cuenta propia. Elige «Otras cuentas».</p>`)
+          : `<label for="transferir-destino-id" class="solo-lector">Id de la cuenta de destino</label>
+             <input id="transferir-destino-id" class="mono-input" data-testid="transferir-destino-id" autocomplete="off" spellcheck="false" placeholder="Pega el id de la cuenta (36 caracteres)" value="${esc(v.destinoId && !propias.some(x => x.id === v.destinoId) ? v.destinoId : "")}" ${enviando ? "disabled" : ""}>
+             <span class="ayuda">Pídele a la otra persona el id de su cuenta. Sólo verificamos que exista.</span>`}
+      </fieldset>
+      <div class="campo"><label for="transferir-monto">Monto</label>
+        <div class="con-prefijo"><span aria-hidden="true">US$</span><input id="transferir-monto" data-testid="transferir-monto" inputmode="decimal" autocomplete="off" placeholder="150.00" aria-describedby="ayuda-monto" value="${esc(v.monto || "")}" ${enviando ? "disabled" : ""}></div>
+        <span class="ayuda" id="ayuda-monto">Con punto para los centavos: 1234.56</span></div>
+      ${t.error === "SIN_RESPUESTA"
+        ? `<div class="aviso aviso-error" role="alert" data-testid="transferir-sin-respuesta"><strong>No recibimos respuesta del banco.</strong>
+             <span>Puede que la transferencia se haya hecho. «Reintentar» manda la misma operación con la misma clave: si ya se hizo, no se repite.</span>
+             <span class="codigo">Idempotency-Key ${esc(t.envio.clave)}</span>
+             <div><button type="button" class="btn btn-secundario btn-chico" data-testid="transferir-reintentar" id="transferir-reintentar">Reintentar</button></div></div>`
+        : t.error ? avisoError("transferir-error", t.error) : ""}
+      <div><button class="btn btn-primario" type="submit" data-testid="transferir-enviar" id="transferir-enviar" ${enviando ? "disabled" : ""}>${enviando ? `<span class="giro" aria-hidden="true"></span>Transfiriendo…` : "Transferir"}</button></div>
+    </form>`;
+  }
+  return `<main class="contenido" aria-labelledby="t-tx">
+    <div class="encabezado"><div><h1 id="t-tx">Transferir</h1><p class="suave">Desde una cuenta tuya hacia otra tuya o de otra persona.</p></div></div>
+    ${cuerpo}</main>`;
+}
+
+function render() {
+  if (!st.sesion && !["login", "registro"].includes(st.vista)) st.vista = "login";
+  raiz.innerHTML = st.vista === "login" ? vistaLogin()
+    : st.vista === "registro" ? vistaRegistro()
+    : barra() + (st.vista === "resumen" ? vistaResumen() : vistaTransferir());
+  enlazar();
+  pintarContrato();
+  pintarIds();
+}
+
+/* ================= Eventos ================= */
+function ocupado(boton, texto) { boton.disabled = true; boton.innerHTML = `<span class="giro" aria-hidden="true"></span>${texto}`; boton.closest("form").setAttribute("aria-busy", "true"); boton.closest("form").dataset.estado = "enviando"; }
+
+function enlazar() {
+  raiz.querySelectorAll("[data-ir]").forEach(b => b.onclick = () => ir(b.dataset.ir));
+  raiz.querySelectorAll("[data-copiar]").forEach(b => b.onclick = () => { navigator.clipboard?.writeText(b.dataset.copiar); b.textContent = "Copiado"; setTimeout(() => b.textContent = "Copiar", 1400); });
+  const on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el[ev] = fn; };
+
+  on("ir-registro", "onclick", () => { st.avisoSesion = null; st.registroOk = null; st.vista = "registro"; render(); });
+  on("ir-login", "onclick", () => { st.vista = "login"; render(); });
+  on("salir", "onclick", () => cerrarSesion(null));
+
+  on("login-form", "onsubmit", async e => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value, password = document.getElementById("login-password").value;
+    st.emailPrevio = email;
+    ocupado(document.getElementById("login-enviar"), "Entrando…");
+    let r;
+    try { r = await api("POST", "/auth/login", { cuerpo: { email, password } }); }
+    catch { r = { status: 0, body: { codigo: "SIN_RESPUESTA" } }; }
+    if (r.status === 200) {
+      const yo = await api("GET", "/auth/yo", { token: "Bearer " + r.body.token }).catch(() => null);
+      if (yo && yo.status === 200) { st.sesion = { token: r.body.token, email: yo.body.email }; st.avisoSesion = null; st.registroOk = null; ir("resumen"); return; }
+      r = yo || { body: { codigo: "SIN_RESPUESTA" } };
+    }
+    render();
+    document.getElementById("login-error-lugar").innerHTML = avisoError("login-error", r.body.codigo);
+    pintarContrato(); pintarIds();
+  });
+
+  on("registro-form", "onsubmit", async e => {
+    e.preventDefault();
+    const email = document.getElementById("registro-email").value, password = document.getElementById("registro-password").value;
+    ocupado(document.getElementById("registro-enviar"), "Creando…");
+    let r;
+    try { r = await api("POST", "/auth/registro", { cuerpo: { email, password } }); }
+    catch { r = { status: 0, body: { codigo: "SIN_RESPUESTA" } }; }
+    if (r.status === 201) { st.registroOk = r.body.email; st.emailPrevio = r.body.email; st.vista = "login"; render(); return; }
+    render();
+    document.getElementById("registro-email").value = email;
+    document.getElementById("registro-error-lugar").innerHTML = avisoError("registro-error", r.body.codigo);
+    pintarContrato(); pintarIds();
+  });
+
+  on("cuentas-reintentar", "onclick", cargarCuentas);
+
+  const leerForm = () => {
+    const destino = st.tx.modo === "propia" ? document.getElementById("transferir-destino-propia")?.value || "" : document.getElementById("transferir-destino-id")?.value.trim() || "";
+    return { origenId: document.getElementById("transferir-origen").value, destinoId: destino, monto: document.getElementById("transferir-monto").value.trim() };
+  };
+  raiz.querySelectorAll('input[name="modo"]').forEach(r => r.onchange = () => {
+    st.tx.envio = { clave: st.tx.envio?.clave, cuerpo: { ...leerForm(), destinoId: "" } };
+    st.tx.modo = r.value; st.tx.error = null; render();
+  });
+  on("transferir-origen", "onchange", () => { st.tx.envio = { clave: st.tx.envio?.clave, cuerpo: leerForm() }; render(); });
+
+  on("transferir-form", "onsubmit", e => { e.preventDefault(); enviarTransferencia({ clave: uuid(), cuerpo: leerForm() }); });
+  on("transferir-reintentar", "onclick", () => enviarTransferencia(st.tx.envio));
+  on("transferir-nueva", "onclick", () => { st.tx = { estado: "editando", error: null, envio: null, recibo: null, repetida: false, modo: st.tx.modo }; render(); });
+}
+
+async function enviarTransferencia(envio) {
+  st.tx.envio = envio; st.tx.estado = "enviando"; st.tx.error = null; render();
+  let r;
+  try { r = await api("POST", "/transferencias", { token: "Bearer " + st.sesion.token, clave: envio.clave, cuerpo: envio.cuerpo }); }
+  catch { st.tx.estado = "error"; st.tx.error = "SIN_RESPUESTA"; render(); return; }
+  if (manejaSesion(r)) return;
+  if (r.status === 201) {
+    st.tx.estado = "hecha"; st.tx.recibo = r.body; st.tx.repetida = r.headers["Idempotency-Replayed"] === "true";
+    render(); cargarCuentas(); return;
+  }
+  st.tx.estado = "error"; st.tx.error = r.body.codigo; render();
+}
+
+/* ================= Mesa del revisor ================= */
+function pintarContrato() {
+  const presentes = new Set([...raiz.querySelectorAll("[data-testid]")].map(e => e.dataset.testid));
+  document.getElementById("contrato").innerHTML = Object.entries(CONTRATO).map(([vista, ids]) =>
+    `<li class="vista">${vista}</li>` + ids.map(id => `<li class="${presentes.has(id) ? "presente" : "ausente"}"><span class="punto"></span>${id}</li>`).join("")).join("");
+}
+function pintarIds() {
+  const capa = document.getElementById("capa-ids");
+  document.body.classList.toggle("ver-ids", mesa.verIds);
+  if (!mesa.verIds) { capa.innerHTML = ""; return; }
+  const vistos = new Set();
+  capa.innerHTML = [...raiz.querySelectorAll("[data-testid]")].map(el => {
+    const r = el.getBoundingClientRect();
+    if (!r.width && !r.height) return "";
+    const clave = el.dataset.testid + Math.round(r.top);
+    if (vistos.has(clave)) return ""; vistos.add(clave);
+    return `<span class="tag" style="left:${r.left + scrollX}px;top:${r.top + scrollY}px">${el.dataset.testid}</span>`;
+  }).join("");
+}
+addEventListener("resize", pintarIds);
+
+document.querySelectorAll('input[name="latencia"]').forEach(r => r.onchange = () => mesa.latencia = Number(r.value));
+document.querySelectorAll('input[name="proxima"]').forEach(r => r.onchange = () => mesa.proxima = r.value);
+document.getElementById("ver-ids").onchange = e => { mesa.verIds = e.target.checked; pintarIds(); };
+document.getElementById("id-beto").textContent = CTA_BETO;
+document.getElementById("copiar-beto").onclick = e => { navigator.clipboard?.writeText(CTA_BETO); e.target.textContent = "Copiado"; setTimeout(() => e.target.textContent = "Copiar id de su cuenta", 1400); };
+document.getElementById("mesa-reset").onclick = () => {
+  db = semilla(); st.sesion = null; st.avisoSesion = null; st.registroOk = null; st.emailPrevio = "ana@ejemplo.cl";
+  st.tx = { estado: "editando", error: null, envio: null, recibo: null, repetida: false, modo: "propia" }; st.vista = "login"; render();
+};
+
+render();
+</script>

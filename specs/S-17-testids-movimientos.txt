@@ -1,0 +1,40 @@
+# Contrato de data-testid de S-17-movimientos (fase F1).
+# C3: esto es un contrato versionado, no un detalle de implementación. Renombrar uno rompe
+# todas las suites a la vez; se cambia con nota en el registro de cambios de abajo.
+# El check corre sobre el ARTEFACTO RENDERIZADO (brazo N3), nunca sobre el código fuente.
+#
+# REGISTRO DE CAMBIOS
+#   nacimiento de la lista. `nav-movimientos` es entrada PROPIA de la barra (D90-2),
+#         no va en el submenú de Cuentas.
+
+# Entrada a la pantalla
+nav-movimientos
+
+# La vista
+movimientos-region
+movimientos-cargando
+movimientos-vacio
+movimientos-cuentas-error
+movimientos-reintentar
+movimientos-error
+movimientos-codigo-error
+
+# El formulario de búsqueda
+movimientos-form
+movimientos-cuenta
+movimientos-transaccion
+movimientos-desde
+movimientos-hasta
+movimientos-monto
+movimientos-buscar
+
+# Los resultados
+movimientos-tabla
+movimientos-aviso-tope
+
+# De FILA — se repiten una vez por movimiento pintado; N3 no los cuenta como duplicados
+movimiento-fila
+movimiento-concepto
+movimiento-monto
+movimiento-signo
+movimiento-fecha

@@ -1,0 +1,25 @@
+# Contrato de data-testid de S-17-abrir-cuenta.
+# C3: esto es un contrato versionado, no un detalle de implementación. Renombrar uno rompe
+# todas las suites a la vez; se cambia con nota en el registro de cambios.
+# El check corre sobre el ARTEFACTO RENDERIZADO, nunca sobre el código fuente.
+# Estado del front antes de esta unidad (medido en F0):
+# 110 apariciones de data-testid, 107 valores únicos.
+
+# Entrada a la pantalla
+nav-abrir-cuenta
+abrir-primera-cuenta
+
+# La vista de apertura
+abrir-cuenta-region
+abrir-cuenta-cargando
+abrir-cuenta-error
+abrir-cuenta-reintentar
+abrir-cuenta-form
+abrir-cuenta-tipo
+abrir-cuenta-monto
+abrir-cuenta-origen
+abrir-cuenta-enviar
+abrir-cuenta-codigo-error
+
+# El tipo real en el Resumen (HU-04 J1) — es de FILA: se repite una vez por cuenta
+cuenta-tipo

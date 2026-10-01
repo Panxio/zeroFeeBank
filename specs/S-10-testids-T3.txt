@@ -1,0 +1,87 @@
+# Contrato data-testid de S-10 · T3 (69). Versionado: la lista del check por ausencia viaja con él.
+# Fuente: specs/S-10-catalogo.md § 6 (v1) filtrada al alcance de specs/S-10-T3-transferir.md.
+# = los 38 de T2 + 30 de T3 + aviso-simulacion. Fuera: inactividad-* (T4); reservados de S-17.
+#
+# REGISTRO DE CAMBIOS
+#   - se quita ir-transferir (O5, UX-b1); a Transferir se llega por nav-transferir.
+#   - se suma aviso-simulacion (franja de aviso de S-33 F1, una por <main>).
+#
+# Anfitriona · de T1 (8)
+portada
+portada-bruma
+login-abrir
+login-popover
+login-marco
+usuario-email
+salir
+aviso-simulacion
+# Anfitriona · barra (7)
+nav-panel
+nav-cuentas
+nav-cuentas-menu
+nav-resumen
+nav-usuario
+nav-usuario-menu
+nav-hamburguesa
+# Anfitriona · Resumen (10)
+cuentas-region
+cuentas-cargando
+cuentas-tabla
+cuenta-fila
+cuenta-id
+cuenta-copiar-id
+cuenta-saldo
+cuentas-vacio
+cuentas-error
+cuentas-reintentar
+# Anfitriona · sesión (1)
+sesion-aviso
+# Marco, documento de otro origen (13)
+login-form
+login-email
+login-password
+login-enviar
+login-error
+ir-registro
+registro-form
+registro-email
+registro-password
+registro-enviar
+registro-error
+registro-exito
+ir-login
+# Anfitriona · navegación hacia Transferir (1)
+nav-transferir
+# Anfitriona · asistente (9)
+transferir-pasos
+transferir-paso-origen
+transferir-paso-destino
+transferir-paso-revisar
+transferir-origen-siguiente
+transferir-destino-volver
+transferir-destino-siguiente
+transferir-revisar-volver
+transferir-revisar-monto
+# Anfitriona · Transferir (16)
+transferir-form
+transferir-origen
+transferir-destino-modo-propia
+transferir-destino-modo-otra
+transferir-destino-propia
+transferir-destino-id
+transferir-monto
+transferir-enviar
+transferir-error
+transferir-sin-respuesta
+transferir-reintentar
+transferir-exito
+transferir-repetida
+transferir-transaccion-id
+transferir-nueva
+transferir-sin-cuentas
+# Diálogos, dentro del shadow root (3)
+confirmar-dialogo
+confirmar-aceptar
+confirmar-cancelar
+# Comprobante PDF (1)
+transferir-comprobante-pdf

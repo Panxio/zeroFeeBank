@@ -1,0 +1,35 @@
+# deps
+node_modules
+target/
+dist/
+# graphify (memoria de grafo: cost es local)
+graphify-out/cost.json
+# os
+.DS_Store
+
+# stryker (M5): sandbox y reporte se regeneran en cada corrida
+.stryker-tmp/
+reports/
+
+# Residuo de compilación de los tests. Se versionaron por accidente y quedaron
+# DESFASADOS: el .js de auth.int.spec conservaba una aserción defectuosa ya
+# corregida. Una copia vieja del arnés es una segunda fuente de verdad del peor tipo.
+# vitest corre sólo `test/**/*.int.spec.ts` (ver vitest.integracion.config.ts).
+test/*.js
+test/*.js.map
+
+# Política de evidencias (docs/politica-evidencias.md): las PNG y los logs de pruebas no se
+# respaldan por defecto; una captura aprobada se agrega a propósito con `git add -f`.
+probes/**/*.png
+probes/**/*.log
+
+# Capturas de la última corrida de demo:m6 (la referencia aprobada vive en las capturas de referencia)
+probes/m6-ultima/
+
+# Referencias visuales de terceros (marca ajena): no se versionan
+docs/referencias/
+
+# Secretos locales: cada persona crea su propio .env (README); el ejemplo sí se versiona
+.env
+.env.*
+!.env.example

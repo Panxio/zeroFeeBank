@@ -1,0 +1,64 @@
+# Contrato data-testid de S-17 · Boletas (53 nuevos). Versionado: la lista del check por ausencia viaja con él.
+# Fuente: specs/S-17-boletas.md § 4. Se suma a specs/S-10-testids-T4.txt (73): T4 ∪ esta lista = 126.
+# Reservados de S-17 que entran aquí: nav-boletas, boleta-comprobante-pdf, boleta-resumen-pdf.
+#
+# REGISTRO DE CAMBIOS
+#   UX-b2: pestañas de Boletas, aviso de id vacío y logo (marca-inicio va aquí porque esta lista está en todas las uniones de R1).
+#
+# Barra y portada (3)
+nav-boletas
+ir-ventanilla
+marca-inicio
+# Vista Boletas: región y lista (22)
+boletas-region
+boletas-cargando
+boletas-vacio
+boletas-error
+boletas-reintentar
+boletas-sin-cuentas
+boletas-pestana-lista
+boletas-pestana-emitir
+boletas-panel-lista
+boletas-tabla
+boleta-fila
+boleta-estado
+boleta-monto
+boleta-cuenta
+boleta-emitida-en
+boleta-vence-en
+boleta-devolver
+boleta-liberar
+boleta-comprobante-pdf
+boleta-resumen-pdf
+boletas-accion-error
+boletas-accion-sin-respuesta
+# Vista Boletas: emitir (16)
+boletas-panel-emitir
+emitir-form
+emitir-origen
+emitir-monto
+emitir-plazo
+emitir-beneficiario-rut
+emitir-beneficiario-nombre
+emitir-retirador-rut
+emitir-retirador-nombre
+emitir-glosa
+emitir-enviar
+emitir-error
+emitir-sin-respuesta
+emitir-reintentar
+emitir-exito
+emitir-boleta-id
+# Ventanilla pública (12)
+ventanilla
+ventanilla-form
+ventanilla-boleta-id
+ventanilla-rut
+ventanilla-cobrar
+ventanilla-aviso
+ventanilla-error
+ventanilla-sin-respuesta
+ventanilla-reintentar
+ventanilla-exito
+ventanilla-monto
+ventanilla-volver

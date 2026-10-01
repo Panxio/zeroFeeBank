@@ -1,0 +1,46 @@
+# Contrato data-testid de S-10 · T2 (38). Versionado: la lista del check por ausencia viaja con él.
+# Fuente: specs/S-10-catalogo.md § 6 (v1) filtrada al alcance de specs/S-10-T2-barra-resumen.md.
+# = los 20 de T1 + 18 de T2. Fuera: nav-transferir e ir-transferir (T3); reservados de S-17.
+# Anfitriona · de T1 (7)
+portada
+portada-bruma
+login-abrir
+login-popover
+login-marco
+usuario-email
+salir
+# Anfitriona · barra (7)
+nav-panel
+nav-cuentas
+nav-cuentas-menu
+nav-resumen
+nav-usuario
+nav-usuario-menu
+nav-hamburguesa
+# Anfitriona · Resumen (10)
+cuentas-region
+cuentas-cargando
+cuentas-tabla
+cuenta-fila
+cuenta-id
+cuenta-copiar-id
+cuenta-saldo
+cuentas-vacio
+cuentas-error
+cuentas-reintentar
+# Anfitriona · sesión (1)
+sesion-aviso
+# Marco, documento de otro origen (13)
+login-form
+login-email
+login-password
+login-enviar
+login-error
+ir-registro
+registro-form
+registro-email
+registro-password
+registro-enviar
+registro-error
+registro-exito
+ir-login
