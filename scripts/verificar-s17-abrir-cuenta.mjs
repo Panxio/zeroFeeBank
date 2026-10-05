@@ -46,7 +46,10 @@ const LISTA_S17PAG = readFileSync(new URL('../specs/S-17-testids-pagos.txt', imp
 // enmienda § 5.1 de S-17-contacto
 const LISTA_S17CON = readFileSync(new URL('../specs/S-17-testids-contacto.txt', import.meta.url), 'utf8')
   .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
-const UNION = new Set([...LISTA_T4, ...LISTA_BOLETAS, ...LISTA_S17AC, ...LISTA_S17MOV, ...LISTA_S17PAG, ...LISTA_S17CON]);
+// enmienda C3 de S-35
+const LISTA_S35 = readFileSync(new URL('../specs/S-35-testids-idioma.txt', import.meta.url), 'utf8')
+  .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+const UNION = new Set([...LISTA_T4, ...LISTA_BOLETAS, ...LISTA_S17AC, ...LISTA_S17MOV, ...LISTA_S17PAG, ...LISTA_S17CON, ...LISTA_S35]);
 
 // Testids que se repiten legítimamente, uno por fila de la tabla de cuentas
 const DE_FILA = new Set(['cuenta-fila', 'cuenta-id', 'cuenta-copiar-id', 'cuenta-saldo', 'cuenta-tipo']);

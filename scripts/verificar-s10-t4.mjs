@@ -67,6 +67,9 @@ const LISTA_S17PAG = readFileSync(new URL('../specs/S-17-testids-pagos.txt', imp
 // enmienda § 5.1 de S-17-contacto
 const LISTA_S17CON = readFileSync(new URL('../specs/S-17-testids-contacto.txt', import.meta.url), 'utf8')
   .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
+// enmienda C3 de S-35
+const LISTA_S35 = readFileSync(new URL('../specs/S-35-testids-idioma.txt', import.meta.url), 'utf8')
+  .split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'));
 // `cuenta-tipo` se repite una vez por fila, igual que cuenta-id y cuenta-saldo: sin esto R1 lo
 // contaría como repetido y daría rojo sobre una app sana.
 const DE_FILA = new Set(['cuenta-fila', 'cuenta-id', 'cuenta-copiar-id', 'cuenta-saldo', 'cuenta-tipo']);
@@ -3314,7 +3317,7 @@ await correr('R1', async () => {
   } catch {}
 
   const faltan = LISTA.filter((t) => !vistos.has(t));
-  const sobran = [...vistos].filter((t) => !LISTA.includes(t) && !LISTA_S17.includes(t) && !LISTA_S17AC.includes(t) && !LISTA_S17TR.includes(t) && !LISTA_S17MOV.includes(t) && !LISTA_S17PAG.includes(t) && !LISTA_S17CON.includes(t)); // módulos adicionales de S-17 (pagos y contacto)
+  const sobran = [...vistos].filter((t) => !LISTA.includes(t) && !LISTA_S17.includes(t) && !LISTA_S17AC.includes(t) && !LISTA_S17TR.includes(t) && !LISTA_S17MOV.includes(t) && !LISTA_S17PAG.includes(t) && !LISTA_S17CON.includes(t) && !LISTA_S35.includes(t)); // módulos adicionales de S-17 (pagos y contacto) y el idioma de S-35
   brazo('R1', faltan.length === 0 && sobran.length === 0 && repetidos.size === 0,
     `faltan [${faltan.join(', ')}] · sobran [${sobran.join(', ')}] · repetidos [${[...repetidos].join(', ')}] (lista de ${LISTA.length})`);
 });

@@ -143,6 +143,7 @@ const UNION = new Set([
   // testid ajeno sigue poniendo N3 rojo.
   ...leerLista('S-17-testids-pagos.txt'),
   ...leerLista('S-17-testids-contacto.txt'), // enmienda § 5.1 de S-17-contacto
+  ...leerLista('S-35-testids-idioma.txt'),   // enmienda C3 de S-35
 ]);
 // Testids que se repiten legítimamente: los de fila de esta unidad y los del Resumen (T4), que
 // también se recorren al entrar. N3 no los cuenta como duplicados.

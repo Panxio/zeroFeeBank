@@ -135,7 +135,7 @@ brazo `OK|ROJO <id> · <motivo con los números medidos>` y al final `verificar:
 | U1 | `boleta-monto` de cada fila, en los dos anchos | texto en una línea (técnica de O3a) |
 | U2 | encabezados de `movimientos-tabla` | existe un `th` con texto «Tipo» y ninguno con «Signo» |
 | U3a | cada caso a formatear de § 3 (tabla literal), en los dos campos | tras `fill` y **antes** del blur el valor es el tecleado; tras blur es el esperado |
-| U3b | cada caso a dejar intacto de § 3, incluidos `' 12345678-5 '` y `23024748-K` | tras blur el valor es idéntico al tecleado |
+| U3b | cada caso a dejar intacto de § 3, incluidos `' 12345678-5 '` y `12345678-K` | tras blur el valor es idéntico al tecleado |
 | U3c | emitir con `123456785` y `98765433` tecleados, blur, enviar | el cuerpo del `POST /boletas` trae `12.345.678-5` y `9.876.543-3` y el API responde 201 |
 | U5 | teléfono, menú abierto | separación Resumen→Abrir cuenta = separación Transferir→Movimientos (±1), **y ambas > 0** (H-07) |
 | U6a | texto del PDF de comprobante (con `unpdf`, como `test:pdf`) | contiene «zeroFeeBank»; en el texto normalizado, **cada** ISO de fecha (emisión, vencimiento) va precedido de un rótulo que termina en `(UTC):` (regex `\(UTC\):\s*<ISO>`, H-06) |
@@ -162,7 +162,7 @@ Las esperas son por estado (C4) o por aserción con reintento de Playwright; **n
 | `012345678` | `01.234.567-8` | U3a |
 | ` 12345678-5 ` | ` 12345678-5 ` | U3b |
 | `12345678-5` | `12345678-5` | U3b |
-| `23024748-K` | `23024748-K` | U3b |
+| `12345678-K` | `12345678-K` | U3b |
 | `12.345.678-5` | `12.345.678-5` | U3b |
 | ` 123456785` | ` 123456785` | U3b |
 | `1234567895` | `1234567895` | U3b |

@@ -17,6 +17,8 @@ import { InactividadService } from './inactividad.service';
 import { RelojService } from './reloj.service';
 import { registrarCosturas } from './costuras';
 import { ZfbDialogo } from './zfb-dialogo';
+import { I18nService, Idioma } from './i18n/i18n.service';
+import { TPipe } from './i18n/t.pipe';
 
 const SEMILLA = 0x5a4f46; // "ZOF"
 function mulberry32(a: number): () => number {
@@ -137,11 +139,20 @@ const LARGO_ID_CORTO = 6;
 
 @Component({
   selector: 'app-root',
-  imports: [ZfbDialogo],
+  imports: [ZfbDialogo, TPipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App implements OnInit, AfterViewInit, OnDestroy {
+  readonly i18n = inject(I18nService);
+  readonly idiomaActual = this.i18n.idioma;
+  readonly t = (clave: string, params?: Record<string, string | number>) => this.i18n.t(clave, params);
+
+  alCambiarIdioma(evento: Event): void {
+    const valor = (evento.target as HTMLSelectElement).value;
+    this.i18n.fijar(valor as Idioma);
+  }
+
   readonly estadoBruma = signal<'congelado' | 'animando'>(
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       ? 'congelado'
@@ -199,7 +210,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   // Vista Abrir cuenta
   readonly estadoAbrirCuenta = signal<'cargando' | 'listo' | 'error'>('cargando');
-  readonly errorCargaAbrirCuenta = signal<{ mensaje?: string } | null>(null);
+  readonly errorCargaAbrirCuenta = signal<{ codigo?: string; motivo?: string; mensaje?: string } | null>(null);
   readonly errorEnvioAbrirCuenta = signal<{ codigo?: string; mensaje?: string } | null>(null);
   readonly tipoAbrirCuenta = signal<string>('CORRIENTE');
   readonly montoAbrirCuenta = signal<string>('1000.00');
@@ -293,7 +304,8 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
 
   nombreBanco(codigo?: string): string {
     if (!codigo) return '';
-    return this.CATALOGO_BANCOS[codigo] ?? codigo;
+    const clave = `banco.${codigo}`;
+    return this.i18n.has(clave) ? this.t(clave) : (this.CATALOGO_BANCOS[codigo] ?? codigo);
   }
 
   readonly estadoTransferencia = signal<'editando' | 'enviando' | 'error'>('editando');
@@ -623,6 +635,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       if (!res.ok) {
         const cuerpo = (await res.json().catch(() => ({}))) as { codigo?: string; mensaje?: string };
         this.errorCargaAbrirCuenta.set({
+          codigo: cuerpo?.codigo,
           mensaje: cuerpo?.mensaje || cuerpo?.codigo || 'Error al obtener la información de tus cuentas.',
         });
         this.estadoAbrirCuenta.set('error');
@@ -638,6 +651,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.detectChanges();
     } catch {
       this.errorCargaAbrirCuenta.set({
+        motivo: 'SIN_CONEXION',
         mensaje: 'No se pudo conectar con el servidor para obtener las cuentas.',
       });
       this.estadoAbrirCuenta.set('error');
@@ -893,7 +907,8 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   obtenerRotuloConcepto(codigo: string): string {
-    return MAPA_CONCEPTOS_MOVIMIENTOS[codigo] ?? codigo;
+    const clave = `movimientos.concepto.${codigo}`;
+    return this.i18n.has(clave) ? this.t(clave) : (MAPA_CONCEPTOS_MOVIMIENTOS[codigo] ?? codigo);
   }
 
   obtenerMontoAbsoluto(monto: string): string {
@@ -906,23 +921,18 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     return monto.startsWith('-') ? 'DEBITO' : 'CREDITO';
   }
 
+  textoSigno(monto: string): string {
+    const signo = this.obtenerSigno(monto);
+    const clave = `movimientos.signo.${signo}`;
+    return this.i18n.has(clave) ? this.t(clave) : signo;
+  }
+
   mensajeErrorMovimientos(codigo: string): string {
-    switch (codigo) {
-      case 'CUENTA_ID_REQUERIDO':
-        return 'Debes seleccionar una cuenta para consultar sus movimientos.';
-      case 'CUENTA_ID_INVALIDO':
-        return 'El identificador de la cuenta no es válido.';
-      case 'TRANSACCION_ID_INVALIDO':
-        return 'El identificador de transacción debe ser un UUID válido.';
-      case 'FECHA_INVALIDA':
-        return 'La fecha ingresada no es válida. Usa el formato AAAA-MM-DD.';
-      case 'RANGO_INVALIDO':
-        return 'El rango de fechas no es válido. La fecha desde no puede ser posterior a hasta.';
-      case 'MONTO_INVALIDO':
-        return 'El monto ingresado no es válido. Debe ser un valor numérico positivo.';
-      default:
-        return 'Ocurrió un error al buscar los movimientos.';
+    const clave = `movimientos.error.${codigo}`;
+    if (this.i18n.has(clave)) {
+      return this.t(clave);
     }
+    return this.t('movimientos.error.DEFAULT');
   }
 
   // ── S-17 · Pagos ──────────────────────────────────────────────────────────
@@ -1506,12 +1516,14 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   textoEstado(b: BoletaDto): string {
-    if (b.estado === 'VIGENTE') return 'Vigente';
+    if (b.estado === 'VIGENTE') return this.t('boleta.estado.VIGENTE');
     if (b.estado === 'VENCIDA') {
-      return b.fondosLiberados ? 'Vencida · fondos liberados' : 'Vencida · fondos por liberar';
+      return b.fondosLiberados
+        ? this.t('boleta.estado.VENCIDA_LIBERADOS')
+        : this.t('boleta.estado.VENCIDA_POR_LIBERAR');
     }
-    if (b.estado === 'COBRADA') return 'Cobrada';
-    if (b.estado === 'DEVUELTA') return 'Devuelta';
+    if (b.estado === 'COBRADA') return this.t('boleta.estado.COBRADA');
+    if (b.estado === 'DEVUELTA') return this.t('boleta.estado.DEVUELTA');
     return b.estado;
   }
 
@@ -1521,6 +1533,17 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   }
 
   textoError(codigo?: string | null, mensaje?: string | null): string {
+    const idioma = this.i18n.idioma();
+    if (idioma === 'en') {
+      if (codigo) {
+        const clave = `error.${codigo}`;
+        if (this.i18n.has(clave)) {
+          return this.t(clave);
+        }
+      }
+      return this.t('error.DEFAULT');
+    }
+
     if (codigo === 'FONDOS_INSUFICIENTES') {
       return 'El saldo disponible de la cuenta de origen no alcanza para este monto.';
     }
@@ -1536,13 +1559,97 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     if (mensaje && mensaje.trim().length > 0) {
       return mensaje;
     }
+    if (codigo) {
+      const clave = `error.${codigo}`;
+      if (this.i18n.has(clave)) {
+        return this.t(clave);
+      }
+    }
     return 'No se pudo completar la operación.';
   }
 
   formatearCuenta(cuentaId: string): string {
     const c = this.cuentas().find((x) => x.id === cuentaId);
-    const tipo = c?.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente';
-    return tipo;
+    return this.textoTipoCuenta(c?.tipo);
+  }
+
+  textoTipoCuenta(tipo?: string): string {
+    return tipo === 'AHORRO' ? this.t('cuenta.tipo.ahorro') : this.t('cuenta.tipo.corriente');
+  }
+
+  textoAriaCuenta(tipo: string, id: string, saldo: string): string {
+    return `${this.textoTipoCuenta(tipo)} ${id} · $ ${saldo}`;
+  }
+
+  textoAriaCuentaSinSaldo(tipo: string, id: string): string {
+    return `${this.textoTipoCuenta(tipo)} ${id}`;
+  }
+
+  textoAvisoSesion(aviso: { motivo: string; codigo?: string; mensaje: string } | null): string {
+    if (!aviso) return '';
+    if (this.i18n.idioma() === 'en') {
+      if (aviso.motivo === 'inactividad') {
+        return this.t('sesion.avisoInactividad');
+      }
+      if (aviso.codigo) {
+        return this.t('sesion.cerrada', { codigo: aviso.codigo });
+      }
+      return this.t('sesion.cerradaGenerica');
+    }
+    return aviso.mensaje;
+  }
+
+  textoErrorCuentas(err: { codigo?: string; motivo?: string; mensaje?: string } | null): string {
+    if (this.i18n.idioma() === 'en') {
+      if (err?.motivo === 'SIN_RESPUESTA') {
+        return this.t('cuentas.errorSinConexion');
+      }
+      if (err?.codigo && this.i18n.has(`error.${err.codigo}`)) {
+        return this.t(`error.${err.codigo}`);
+      }
+      return this.t('cuentas.errorCarga');
+    }
+    return err?.mensaje || 'Error al obtener la información de tus cuentas.';
+  }
+
+  textoErrorCargaAbrirCuenta(err: { codigo?: string; motivo?: string; mensaje?: string } | null): string {
+    if (this.i18n.idioma() === 'en') {
+      if (err?.motivo === 'SIN_CONEXION') {
+        return this.t('abrirCuenta.errorConexion');
+      }
+      if (err?.codigo && this.i18n.has(`error.${err.codigo}`)) {
+        return this.t(`error.${err.codigo}`);
+      }
+      return this.t('abrirCuenta.errorCarga');
+    }
+    return err?.mensaje || 'Error al obtener la información de tus cuentas.';
+  }
+
+  textoAvisoVentanilla(aviso: string | null): string {
+    if (!aviso) return '';
+    if (this.i18n.idioma() === 'en') {
+      return this.t('ventanilla.avisoIdRequerido');
+    }
+    return aviso;
+  }
+
+  textoErrorPdfTransferir(errPdf: string | null): string {
+    if (!errPdf) return '';
+    if (this.i18n.idioma() === 'en') {
+      return this.t('transferir.errorPdf');
+    }
+    return errPdf;
+  }
+
+  textoErrorPdfBoletas(errPdf: string | null): string {
+    if (!errPdf) return '';
+    if (this.i18n.idioma() === 'en') {
+      if (errPdf === 'Error de red al descargar el archivo PDF.') {
+        return this.t('boletas.errorPdfRed');
+      }
+      return this.t('boletas.errorPdf');
+    }
+    return errPdf;
   }
 
   formatearFechaUtc(iso: string): string {

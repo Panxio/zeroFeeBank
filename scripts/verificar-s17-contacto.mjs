@@ -127,6 +127,7 @@ const UNION = new Set([
   ...leerLista('S-17-testids-movimientos.txt'),
   ...leerLista('S-17-testids-pagos.txt'),
   ...LISTA_S17C,
+  ...leerLista('S-35-testids-idioma.txt'), // enmienda C3 de S-35
 ]);
 
 // Testids de otras vistas que pueden repetirse legítimamente al navegar por el Resumen

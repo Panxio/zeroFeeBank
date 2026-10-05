@@ -16,8 +16,10 @@ ni financieros reales.
 
 - **Backend:** NestJS + PostgreSQL + Prisma (TypeScript).
 - **Frontend:** Angular 21 (`web/`).
-- **La interfaz de usuario está en español.** La documentación está en inglés (y en español en
-  este archivo). Las specs de `specs/` están escritas, por ahora, en español.
+- **La interfaz de usuario es bilingüe** (español por defecto e inglés), se elige con el selector
+  de idioma de la cabecera y la elección dura lo que dura la sesión del navegador. La documentación
+  está en inglés (y en español en este archivo). Las specs de `specs/` están escritas, por ahora, en
+  español.
 - **La suite E2E no está en este repositorio, a propósito.** Una suite que vive dentro de la app
   termina apoyándose en su código y deja de ser portable entre frameworks. Mira
   [ARQUITECTURA.md](ARQUITECTURA.md) (en inglés).
@@ -32,9 +34,10 @@ ni financieros reales.
 6. [Cómo correr las comprobaciones](#cómo-correr-las-comprobaciones)
 7. [Security notes](#security-notes)
 8. [Solución de problemas](#solución-de-problemas)
-9. [Estructura del repositorio](#estructura-del-repositorio)
-10. [Rigor](#rigor)
-11. [Licencia y descargo](#licencia-y-descargo)
+9. [Limitaciones conocidas](#limitaciones-conocidas)
+10. [Estructura del repositorio](#estructura-del-repositorio)
+11. [Rigor](#rigor)
+12. [Licencia y descargo](#licencia-y-descargo)
 
 ## Qué puedes automatizar
 
@@ -319,17 +322,27 @@ ejecutes sobre datos que quieras conservar.
   cambiar. El catálogo está en [AGENTS.md](AGENTS.md) (en inglés).
 - **`data-testid` como contrato versionado.** Todo elemento con el que interactúa un flujo de
   negocio lleva un `data-testid` estable. Las listas están versionadas en `specs/`
-  (`S-10-testids-T1.txt` a `T4.txt`, y `S-17-testids-*.txt`). Renombrar uno rompe todas las
-  suites a la vez, así que un cambio es un cambio de contrato, no un detalle de implementación.
-  Los estados de carga, vacío y error tienen sus propios test ids (por ejemplo `cuentas-cargando`,
-  `cuentas-error`, `boletas-cargando`). No ancles los localizadores en texto visible ni en montos
-  formateados.
+  (`S-10-testids-T1.txt` a `T4.txt`, `S-17-testids-*.txt` y la lista del selector de idioma). Renombrar
+  uno rompe todas las suites a la vez, así que un cambio es un cambio de contrato, no un detalle de
+  implementación. Los estados de carga, vacío y error tienen sus propios test ids (por ejemplo
+  `cuentas-cargando`, `cuentas-error`, `boletas-cargando`). No ancles los localizadores en texto
+  visible ni en montos formateados.
+- **Selector de idioma y `?lang=`.** El selector es un `<select data-testid="idioma-selector">`
+  con las opciones `es` y `en`; su nombre accesible (`aria-label`) sigue el idioma activo.
+  `?lang=en` o `?lang=es` en la URL fija el idioma al arrancar, para que una suite entre a cada
+  ruta en un idioma conocido sin pulsar el selector. Prioridad al arrancar: parámetro `?lang=`
+  primero, luego la clave `zfb.idioma` de `sessionStorage`, luego `es`. `<html lang>` sigue al
+  idioma activo. Los errores de negocio se muestran por su código tipado (por ejemplo
+  `FONDOS_INSUFICIENTES`): una suite debe afirmar sobre el código y no sobre el texto visible, que
+  cambia con el idioma. El campo `mensaje` de las respuestas de la API sigue en español: el front lo
+  reemplaza por el texto de su catálogo según el `codigo`.
 - **Idempotencia.** Todo `POST` que mueve dinero exige un header `Idempotency-Key`; una repetición
   devuelve la misma respuesta y el header `Idempotency-Replayed: true`.
 - **Franja de aviso de simulación.** La app web tiene dos regiones `<main>` (la portada, que también
   aloja las pantallas con sesión iniciada, y la ventanilla pública). Cada una lleva una franja que
   dice que es una simulación, que no es un banco ni un servicio financiero y que todos los datos
-  son ficticios. Es un `<p role="note" data-testid="aviso-simulacion">`, exactamente uno por
+  son ficticios; la franja sigue el idioma elegido (en español dice «No es un banco…» y en inglés
+  «Not a bank…»). Es un `<p role="note" data-testid="aviso-simulacion">`, exactamente uno por
   `<main>`, sin posición `fixed` ni `sticky`, así que no tapa un control.
 
 ## Cómo correr las comprobaciones
@@ -451,6 +464,26 @@ Cada entrada dice: síntoma, causa, solución.
   el segundo, que `npm run build` falló (por ejemplo, falta el `.env`, mira arriba). Lee el archivo de
   log que nombra el script (`ZFB_LOG`).
 
+## Limitaciones conocidas
+
+Estas son decisiones de alcance tomadas a propósito (el backend y el dominio no se tocaron para
+traducir), no defectos que se hayan escondido.
+
+- El marco de login (el iframe que sirve el backend, `src/modules/auth/marco.pagina.ts`) sigue en
+  español en los dos idiomas.
+- Los PDF (comprobantes y boletas, `src/modules/comprobantes/plantillas/pdf.ts`) salen en español en
+  los dos idiomas.
+- El `mensaje` de las respuestas de la API está en español; el front usa el catálogo según el
+  `codigo`. Si pruebas la API, afirma sobre `codigo`.
+- No se traducen los datos del usuario (nombres, glosas) ni se cambia el formato de monedas y
+  fechas.
+- Sólo hay dos idiomas (`es`, `en`). No hay idioma por ruta de URL ni por SEO; sólo `?lang=`.
+- Las specs de `specs/` están en español.
+- El campo **Monto** de Pagos es un campo de texto simple y no filtra lo que escribes. Es por
+  diseño: la validación le corresponde al servidor. Un monto mal formado (por ejemplo `ujhuhjku`)
+  se rechaza con `400 MONTO_INVALIDO`, la pantalla muestra el error en el idioma activo y no se
+  mueve dinero.
+
 ## Estructura del repositorio
 
 ```
@@ -478,18 +511,22 @@ tabla.
 
 | Medida | Resultado | Medido el | Verificado el día de publicar |
 |---|---|---|---|
-| Mutación sobre `src/domain/` (`npm run test:mutation`, Stryker; umbral 70 %) | 82,93 % | 2026-10-01 | hecho |
-| Tests unitarios del dominio (`npm run test:domain`) | 140/140 | 2026-10-01 | hecho |
-| Tests de integración (`npm run test:integracion`) | 446/446 | 2026-10-01 | hecho |
-| Invariantes del libro mayor I1 a I7 (`npm run invariantes`) | 7/7 | 2026-10-01 | hecho |
-| Calibración de los invariantes (`npm run invariantes:calibrar`, defectos inyectados a propósito) | 21/21 | 2026-10-01 | hecho |
-| Demo completa (`npm run demo:m6`, login a transferencia a boleta, desde el reset) | 3/3 corridas, 42/42 pasos | 2026-10-01 | hecho |
-| Verificación de la pantalla de boletas (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-01 | hecho |
-| Calibración de esa verificación (`npm run calibrar:s17-boletas`, defectos inyectados a propósito) | 52/54 (2 defectos inyectados sin cazar) | 2026-10-01 | hecho |
-| Guante de restricciones (`npm run guante`) | 6/6 | 2026-10-01 | hecho |
+| Mutación sobre `src/domain/` (`npm run test:mutation`, Stryker; umbral 70 %) | 83,20 % | 2026-10-05 | hecho |
+| Tests unitarios del dominio (`npm run test:domain`) | 144/144 | 2026-10-05 | hecho |
+| Tests de integración (`npm run test:integracion`) | 446/446 | 2026-10-05 | hecho |
+| Invariantes del libro mayor I1 a I7 (`npm run invariantes`) | 7/7 | 2026-10-05 | hecho |
+| Calibración de los invariantes (`npm run invariantes:calibrar`, defectos inyectados a propósito) | 21/21 | 2026-10-05 | hecho |
+| Demo completa (`npm run demo:m6`, login a transferencia a boleta, desde el reset) | 3/3 corridas, 42/42 pasos | 2026-10-05 | hecho |
+| Verificación de la pantalla de boletas (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-05 | hecho |
+| Calibración de esa verificación (`npm run calibrar:s17-boletas`, defectos inyectados a propósito) | 39/54 (13 defectos nunca inyectados, 2 defectos inyectados sin cazar) | 2026-10-05 | hecho |
+| Guante de restricciones (`npm run guante`) | 6/6 | 2026-10-05 | hecho |
 
 Nota: el script que está detrás de `calibrar:s17-boletas` no se incluye en este repositorio, así que
-esa fila no se puede reproducir desde aquí; las demás sí.
+esa fila no se puede reproducir desde aquí; las demás sí. Su caída desde 52/54 no es un hallazgo
+sobre la verificación de la pantalla: la calibración planta cada defecto buscando texto literal en
+las plantillas de Angular, y el front bilingüe reemplazó ese texto por claves de traducción, así que
+13 de las 54 anclas ya no existen y esos defectos nunca se inyectaron. Cuentan como no medidos, no
+como cazados. Los 2 defectos inyectados sin cazar son los mismos dos de antes.
 
 Una verificación «ciega» es la que no podía ponerse roja ante el defecto que debía cazar.
 Encontrarlas y corregirlas es justamente el sentido de calibrar. Los números de arriba no afirman

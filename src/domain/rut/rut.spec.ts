@@ -13,8 +13,8 @@ import { RutInvalidoError, esRutValido, normalizarRut } from './rut.js';
  * ─── De dónde salen los dígitos verificadores de estos casos ────────────────────────────
  * NO están inventados: se calcularon con el módulo 11 estándar antes de escribir el arnés,
  * y el algoritmo está escrito en la spec para que el resultado sea reproducible por
- * cualquiera. 12345678-2 · 9876543-5 · 11111111-K · 7654321-K · 5126663-9 · 22222222-9 ·
- * 18765432-9 · 1-9 · 6-K · 999999-K.
+ * cualquiera. 12345678-5 · 9876543-3 · 1000070-K · 7654321-6 · 5126663-3 · 22222222-2 ·
+ * 18765432-7 · 1000609-0 · 1-9 · 6-K · 999999-K.
  *
  * ─── Los dos K importan ────────────────────────────────────────────────────────────────
  * El resto 10 es el único caso que no es un dígito, y es donde muere una implementación que
@@ -92,6 +92,32 @@ describe('esRutValido', () => {
   });
 });
 
+/**
+ * R14–R17: los tres bordes que la spec dejaba abiertos (S-09). Fijan lo que
+ * `rut.ts` ya hacía, medido el 2026-10-02; no cambian el código.
+ */
+describe('esRutValido · bordes de la enmienda', () => {
+  it('R14 · un cuerpo que queda vacío tras descartar los ceros no es un RUT, aunque el DV (0) cuadre', () => {
+    expect(esRutValido('0-0')).toBe(false);
+    expect(esRutValido('00-0')).toBe(false);
+  });
+
+  it('R15 · el DV es exactamente un carácter: ni un punto antes ni uno después', () => {
+    expect(esRutValido('12345678-.5')).toBe(false);
+    expect(esRutValido('12345678-5.')).toBe(false);
+  });
+
+  it('R16 · los puntos del cuerpo no se validan por posición: se descartan donde estén', () => {
+    expect(esRutValido('12345.678-5')).toBe(true);
+    expect(normalizarRut('12345.678-5')).toBe('12345678-5');
+  });
+
+  it('R17 · el largo del cuerpo se mide tras quitar los ceros a la izquierda, no antes', () => {
+    expect(esRutValido('000000001-9')).toBe(true);
+    expect(normalizarRut('000000001-9')).toBe('1-9');
+  });
+});
+
 describe('normalizarRut', () => {
   it('R9 · devuelve la forma canónica: sin puntos, con guion, DV en mayúscula', () => {
     expect(normalizarRut('12.345.678-5')).toBe('12345678-5');
@@ -102,7 +128,7 @@ describe('normalizarRut', () => {
 
   it('R10 · descarta los ceros a la izquierda del cuerpo', () => {
     // El mismo RUT escrito de dos maneras tiene que quedar guardado UNA sola, o el cobro
-    // compararía "012345678-2" con "12345678-2" y negaría a quien sí puede retirar.
+    // compararía "012345678-5" con "12345678-5" y negaría a quien sí puede retirar.
     expect(normalizarRut('012345678-5')).toBe('12345678-5');
     expect(normalizarRut('0000001-9')).toBe('1-9');
   });

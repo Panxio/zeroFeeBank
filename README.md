@@ -15,8 +15,10 @@ no real bank and no real rates are involved. Every screen carries a notice strip
 
 - **Backend:** NestJS + PostgreSQL + Prisma (TypeScript).
 - **Frontend:** Angular 21 (`web/`).
-- **The user interface is in Spanish.** The documentation is in English (and Spanish in
-  [README.es.md](README.es.md)). The specs in `specs/` are currently written in Spanish.
+- **The user interface is bilingual** (Spanish by default, and English), chosen with the
+  language selector in the header; the choice lasts for the browser session. The documentation is in
+  English (and Spanish in [README.es.md](README.es.md)). The specs in `specs/` are currently
+  written in Spanish.
 - **The E2E suite is deliberately not in this repository.** A suite that lives inside the app ends
   up leaning on its code and stops being portable across frameworks. See
   [ARQUITECTURA.md](ARQUITECTURA.md).
@@ -31,9 +33,10 @@ no real bank and no real rates are involved. Every screen carries a notice strip
 6. [Running the checks](#running-the-checks)
 7. [Security notes](#security-notes)
 8. [Troubleshooting](#troubleshooting)
-9. [Repository layout](#repository-layout)
-10. [Rigor](#rigor)
-11. [License and disclaimer](#license-and-disclaimer)
+9. [Known limitations](#known-limitations)
+10. [Repository layout](#repository-layout)
+11. [Rigor](#rigor)
+12. [License and disclaimer](#license-and-disclaimer)
 
 ## What you can automate
 
@@ -310,17 +313,27 @@ on data you want to keep.
   is in [AGENTS.md](AGENTS.md).
 - **`data-testid` as a versioned contract.** Every element a business flow interacts with carries
   a stable `data-testid`. The lists are versioned in `specs/` (`S-10-testids-T1.txt` to
-  `T4.txt`, and `S-17-testids-*.txt`). Renaming one breaks every suite at once, so a change is a
-  change to the contract, not an implementation detail. Loading, empty and error states have their
-  own test ids (for example `cuentas-cargando`, `cuentas-error`, `boletas-cargando`). Do not anchor
-  locators on visible text or on formatted amounts.
+  `T4.txt`, `S-17-testids-*.txt`, and the language-selector list). Renaming one breaks every suite
+  at once, so a change is a change to the contract, not an implementation detail. Loading, empty and
+  error states have their own test ids (for example `cuentas-cargando`, `cuentas-error`,
+  `boletas-cargando`). Do not anchor locators on visible text or on formatted amounts.
+- **Language selector and `?lang=`.** The selector is a `<select data-testid="idioma-selector">`
+  with options `es` and `en`; its accessible name (`aria-label`) tracks the active language.
+  `?lang=en` or `?lang=es` in the URL sets the language at startup, so a suite can enter each route
+  in a known language without clicking the selector. Priority at startup: `?lang=` parameter first,
+  then the `zfb.idioma` key in `sessionStorage`, then `es`. `<html lang>` tracks the active
+  language. Business errors are shown by their typed code (for example `FONDOS_INSUFICIENTES`): a
+  suite must assert on the code and not on the visible text, which changes with the language. The
+  `mensaje` field of API responses remains in Spanish: the frontend replaces it with text from its
+  catalogue according to `codigo`.
 - **Idempotency.** Every `POST` that moves money requires an `Idempotency-Key` header; a replay
   returns the same response and the header `Idempotency-Replayed: true`.
 - **Simulation notice.** The web app has two `<main>` regions (the landing page, which also hosts
   the signed-in screens, and the public ventanilla). Each carries a strip stating that this is a
-  simulation, not a bank or a financial service, and that all data is fictitious (the UI text is
-  in Spanish). It is a `<p role="note" data-testid="aviso-simulacion">`, exactly one per `<main>`,
-  with no `fixed` or `sticky` positioning, so it does not cover a control.
+  simulation, not a bank or a financial service, and that all data is fictitious; the strip tracks
+  the chosen language (in Spanish it says «No es un banco…» and in English «Not a bank…»). It is a
+  `<p role="note" data-testid="aviso-simulacion">`, exactly one per `<main>`, with no `fixed` or
+  `sticky` positioning, so it does not cover a control.
 
 ## Running the checks
 
@@ -432,6 +445,26 @@ Each entry reads: symptom, cause, fix.
   `npm run build` failed (for example a missing `.env`, see above). Read the log file the script names
   (`ZFB_LOG`).
 
+## Known limitations
+
+These are deliberate scope decisions (the backend and the domain were not touched for translation),
+not hidden defects.
+
+- The login frame (the iframe served by the backend, `src/modules/auth/marco.pagina.ts`) remains in
+  Spanish in both languages.
+- PDFs (receipts and guarantee bonds, `src/modules/comprobantes/plantillas/pdf.ts`) are generated in
+  Spanish in both languages.
+- The `mensaje` field in API responses is in Spanish; the frontend uses the catalogue according to
+  `codigo`. If you test the API, assert on `codigo`.
+- User data (names, descriptions) is not translated, nor are currency and date formats changed.
+- There are only two languages (`es`, `en`). There is no language per URL path or for SEO; only
+  `?lang=`.
+- The specs in `specs/` are in Spanish.
+- The **Amount** field of Bill Pay is a plain text input and does not filter what you type. This is
+  by design: validation belongs to the server. A malformed amount (for example `ujhuhjku`) is
+  rejected with `400 MONTO_INVALIDO`, the screen shows the error in the active language, and no
+  money moves.
+
 ## Repository layout
 
 ```
@@ -458,18 +491,22 @@ command that reproduces it; the one exception is noted under the table.
 
 | Measure | Result | Measured on | Checked on publish day |
 |---|---|---|---|
-| Mutation score on `src/domain/` (`npm run test:mutation`, Stryker; threshold 70 %) | 82.93 % | 2026-10-01 | done |
-| Domain unit tests (`npm run test:domain`) | 140/140 | 2026-10-01 | done |
-| Integration tests (`npm run test:integracion`) | 446/446 | 2026-10-01 | done |
-| Ledger invariants I1 to I7 (`npm run invariantes`) | 7/7 | 2026-10-01 | done |
-| Invariant calibration (`npm run invariantes:calibrar`, defects injected on purpose) | 21/21 | 2026-10-01 | done |
-| Full demo (`npm run demo:m6`, login to transfer to bond, from reset) | 3/3 runs, 42/42 steps | 2026-10-01 | done |
-| Boletas screen check (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-01 | done |
-| Boletas screen check calibration (`npm run calibrar:s17-boletas`, defects injected on purpose) | 52/54 (2 injected defects not caught) | 2026-10-01 | done |
-| Restriction gate (`npm run guante`) | 6/6 | 2026-10-01 | done |
+| Mutation score on `src/domain/` (`npm run test:mutation`, Stryker; threshold 70 %) | 83.20 % | 2026-10-05 | done |
+| Domain unit tests (`npm run test:domain`) | 144/144 | 2026-10-05 | done |
+| Integration tests (`npm run test:integracion`) | 446/446 | 2026-10-05 | done |
+| Ledger invariants I1 to I7 (`npm run invariantes`) | 7/7 | 2026-10-05 | done |
+| Invariant calibration (`npm run invariantes:calibrar`, defects injected on purpose) | 21/21 | 2026-10-05 | done |
+| Full demo (`npm run demo:m6`, login to transfer to bond, from reset) | 3/3 runs, 42/42 steps | 2026-10-05 | done |
+| Boletas screen check (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-05 | done |
+| Boletas screen check calibration (`npm run calibrar:s17-boletas`, defects injected on purpose) | 39/54 (13 defects never injected, 2 injected defects not caught) | 2026-10-05 | done |
+| Restriction gate (`npm run guante`) | 6/6 | 2026-10-05 | done |
 
 Note: the script behind `calibrar:s17-boletas` is not included in this repository, so that one row
-cannot be reproduced from here; the other rows can.
+cannot be reproduced from here; the other rows can. Its drop from 52/54 is not a finding about the
+screen check: the calibration plants each defect by matching literal text in the Angular templates,
+and the bilingual front end replaced that text with translation keys, so 13 of the 54 anchors no
+longer exist and those defects were never injected. They count as not measured, not as caught. The
+2 injected defects that were not caught are the same two as before.
 
 A "blind" verification is one that could not turn red on the defect it was meant to catch. Finding
 those, and fixing them, is the point of calibrating. The numbers above are not a claim that the

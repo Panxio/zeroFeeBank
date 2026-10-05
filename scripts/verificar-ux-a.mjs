@@ -80,7 +80,7 @@ const TABLA_U3 = [
   { tecleado: '012345678', trasBlur: '01.234.567-8', brazo: 'U3a' },
   { tecleado: ' 12345678-5 ', trasBlur: ' 12345678-5 ', brazo: 'U3b' },
   { tecleado: '12345678-5', trasBlur: '12345678-5', brazo: 'U3b' },
-  { tecleado: '23024748-K', trasBlur: '23024748-K', brazo: 'U3b' },
+  { tecleado: '12345678-K', trasBlur: '12345678-K', brazo: 'U3b' },
   { tecleado: '12.345.678-5', trasBlur: '12.345.678-5', brazo: 'U3b' },
   { tecleado: ' 123456785', trasBlur: ' 123456785', brazo: 'U3b' },
   { tecleado: '1234567895', trasBlur: '1234567895', brazo: 'U3b' },
@@ -800,7 +800,7 @@ try {
     }
   });
 
-  // ── U3b · cada caso a dejar intacto de § 3, incluidos ' 12345678-5 ' y 23024748-K ─────
+  // ── U3b · cada caso a dejar intacto de § 3, incluidos ' 12345678-5 ' y 12345678-K ─────
   await correr('U3b', async () => {
     const s = await sembrarBoletasAfirmado();
     const page = await paginaNueva({ viewport: ESCRITORIO });

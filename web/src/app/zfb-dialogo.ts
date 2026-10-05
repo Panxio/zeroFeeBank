@@ -8,9 +8,11 @@ import {
   output,
   viewChild,
 } from '@angular/core';
+import { TPipe } from './i18n/t.pipe';
 
 @Component({
   selector: 'zfb-dialogo',
+  imports: [TPipe],
   encapsulation: ViewEncapsulation.ShadowDom,
   template: `
     <div class="dialogo-telon" [hidden]="!abierto()" (click)="alClicTelon($event)">
@@ -26,9 +28,9 @@ import {
           (keydown)="alPulsarTecla($event)"
         >
           <div class="dialogo-cuerpo">
-            <h2 id="confirmar-dialogo-titulo" class="dialogo-titulo">Confirmar transferencia</h2>
+            <h2 id="confirmar-dialogo-titulo" class="dialogo-titulo">{{ 'dialogo.confirmar.titulo' | t }}</h2>
             <p class="dialogo-mensaje">
-              ¿Confirmas la transferencia por {{ monto() ? '$ ' + monto() : '' }}? Esta acción no se puede deshacer.
+              {{ 'dialogo.confirmar.mensajePrefijo' | t }}{{ monto() ? '$ ' + monto() : '' }}{{ 'dialogo.confirmar.mensajeSufijo' | t }}
             </p>
             <div class="dialogo-acciones">
               <button
@@ -39,7 +41,7 @@ import {
                 class="boton-cancelar"
                 (click)="cancelar()"
               >
-                Cancelar
+                {{ 'dialogo.confirmar.cancelar' | t }}
               </button>
               <button
                 type="button"
@@ -49,7 +51,7 @@ import {
                 class="boton-aceptar"
                 (click)="aceptar()"
               >
-                Confirmar
+                {{ 'dialogo.confirmar.confirmar' | t }}
               </button>
             </div>
           </div>
@@ -66,14 +68,12 @@ import {
           (keydown)="alPulsarTecla($event)"
         >
           <div class="dialogo-cuerpo">
-            <h2 id="inactividad-dialogo-titulo" class="dialogo-titulo">Tu sesión va a expirar</h2>
+            <h2 id="inactividad-dialogo-titulo" class="dialogo-titulo">{{ 'dialogo.inactividad.titulo' | t }}</h2>
             <p class="dialogo-mensaje">
-              Tu sesión se cerrará en
-              <strong id="inactividad-segundos" data-testid="inactividad-segundos" [attr.data-segundos]="segundos()">{{ segundos() }}</strong>
-              segundos por inactividad.
+              {{ 'dialogo.inactividad.mensajePrefijo' | t }}<strong id="inactividad-segundos" data-testid="inactividad-segundos" [attr.data-segundos]="segundos()">{{ segundos() }}</strong>{{ 'dialogo.inactividad.mensajeSufijo' | t }}
             </p>
             <p class="sr-only" aria-live="polite">
-              Tu sesión se cerrará en {{ anuncioSegundos() }} segundos.
+              {{ 'dialogo.inactividad.srPrefijo' | t }}{{ anuncioSegundos() }}{{ 'dialogo.inactividad.srSufijo' | t }}
             </p>
             <div class="dialogo-acciones">
               <button
@@ -84,7 +84,7 @@ import {
                 class="boton-cancelar"
                 (click)="salir()"
               >
-                Salir
+                {{ 'dialogo.inactividad.salir' | t }}
               </button>
               <button
                 type="button"
@@ -94,7 +94,7 @@ import {
                 class="boton-aceptar"
                 (click)="seguir()"
               >
-                Seguir conectado
+                {{ 'dialogo.inactividad.seguir' | t }}
               </button>
             </div>
           </div>

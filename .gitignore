@@ -22,6 +22,7 @@ test/*.js.map
 # respaldan por defecto; una captura aprobada se agrega a propósito con `git add -f`.
 probes/**/*.png
 probes/**/*.log
+probes/**/*.pid
 
 # Capturas de la última corrida de demo:m6 (la referencia aprobada vive en las capturas de referencia)
 probes/m6-ultima/

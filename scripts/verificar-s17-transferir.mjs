@@ -141,6 +141,7 @@ const UNION = new Set([
   // testid ajeno sigue poniendo N1 rojo.
   ...leerLista('S-17-testids-pagos.txt'),
   ...leerLista('S-17-testids-contacto.txt'), // enmienda § 5.1 de S-17-contacto
+  ...leerLista('S-35-testids-idioma.txt'),   // enmienda C3 de S-35
   ...LISTA_S17T,
 ]);
 

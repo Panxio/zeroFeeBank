@@ -44,6 +44,7 @@ const UNION_POSTERIORES = new Set([
   'S-17-testids-movimientos.txt',  // los 22 de la enmienda E2
   'S-17-testids-pagos.txt',        // enmienda § 5.1 de S-17-pagos
   'S-17-testids-contacto.txt',     // enmienda § 5.1 de S-17-contacto
+  'S-35-testids-idioma.txt',       // enmienda C3 de S-35
 ].flatMap((n) => leerLista(n)));
 
 const resultados = [];

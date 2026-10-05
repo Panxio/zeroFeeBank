@@ -1,21 +1,31 @@
 @if (enVentanilla()) {
   <main class="ventanilla" id="ventanilla" data-testid="ventanilla">
     <header class="barra">
-      <a class="marca" href="#" aria-label="zeroFeeBank, inicio" data-testid="marca-inicio" (click)="alVolverVentanilla($event)">Zero<b>Fee</b>Bank</a>
-      <a href="#" class="link-volver" id="ventanilla-volver" data-testid="ventanilla-volver" role="link" (click)="alVolverVentanilla($event)">
-        Volver a la portada
-      </a>
+      <a class="marca" href="#" [attr.aria-label]="'comun.marcaInicio' | t" data-testid="marca-inicio" (click)="alVolverVentanilla($event)">Zero<b>Fee</b>Bank</a>
+      <div class="barra-derecha">
+        <select class="selector-idioma"
+                data-testid="idioma-selector"
+                [attr.aria-label]="'idioma.selector' | t"
+                [value]="idiomaActual()"
+                (change)="alCambiarIdioma($event)">
+          <option value="es">{{ 'idioma.es' | t }}</option>
+          <option value="en">{{ 'idioma.en' | t }}</option>
+        </select>
+        <a href="#" class="link-volver" id="ventanilla-volver" data-testid="ventanilla-volver" role="link" (click)="alVolverVentanilla($event)">
+          {{ 'ventanilla.volver' | t }}
+        </a>
+      </div>
     </header>
 
     <div class="ventanilla-contenedor">
-      <h1 class="ventanilla-titulo">Ventanilla de cobro</h1>
-      <p class="ventanilla-subtitulo">Cobro de boleta de garantía</p>
+      <h1 class="ventanilla-titulo">{{ 'ventanilla.titulo' | t }}</h1>
+      <p class="ventanilla-subtitulo">{{ 'ventanilla.subtitulo' | t }}</p>
 
       <form class="ventanilla-form" id="ventanilla-form" data-testid="ventanilla-form" novalidate (submit)="$event.preventDefault()">
         <div class="campo">
-          <label for="ventanilla-boleta-id">ID de la boleta</label>
+          <label for="ventanilla-boleta-id">{{ 'ventanilla.idBoleta' | t }}</label>
           <input type="text" id="ventanilla-boleta-id" class="input-mono" data-testid="ventanilla-boleta-id"
-                 placeholder="00000000-0000-0000-0000-000000000000"
+                 [placeholder]="'ventanilla.placeholderBoletaId' | t"
                  autocomplete="off" spellcheck="false"
                  [disabled]="cobrandoVentanilla()"
                  [value]="ventanillaBoletaId()"
@@ -23,9 +33,9 @@
         </div>
 
         <div class="campo">
-          <label for="ventanilla-rut">RUT del retirador</label>
+          <label for="ventanilla-rut">{{ 'ventanilla.rutRetirador' | t }}</label>
           <input type="text" id="ventanilla-rut" data-testid="ventanilla-rut"
-                 placeholder="12345678-9" autocomplete="off"
+                 [placeholder]="'ventanilla.placeholderRut' | t" autocomplete="off"
                  [disabled]="cobrandoVentanilla()"
                  [value]="ventanillaRut()"
                  (input)="ventanillaRut.set($any($event.target).value)">
@@ -33,7 +43,7 @@
 
         @if (avisoVentanilla(); as aviso) {
           <div class="ventanilla-aviso" id="ventanilla-aviso" data-testid="ventanilla-aviso" role="alert">
-            <p>{{ aviso }}</p>
+            <p>{{ textoAvisoVentanilla(aviso) }}</p>
           </div>
         }
 
@@ -45,18 +55,18 @@
 
         @if (sinRespuestaVentanilla()) {
           <div class="ventanilla-sin-respuesta" id="ventanilla-sin-respuesta" data-testid="ventanilla-sin-respuesta" role="alert">
-            <p>No se recibió respuesta del servidor. La operación podría haberse procesado.</p>
+            <p>{{ 'ventanilla.sinRespuesta' | t }}</p>
             <button type="button" class="boton-secundario" id="ventanilla-reintentar" data-testid="ventanilla-reintentar"
                     [disabled]="cobrandoVentanilla()" (click)="reintentarVentanilla()">
-              Reintentar
+              {{ 'comun.reintentar' | t }}
             </button>
           </div>
         }
 
         @if (exitoVentanilla(); as ex) {
           <div class="ventanilla-exito" id="ventanilla-exito" data-testid="ventanilla-exito" role="status" [attr.data-estado]="ex.estado">
-            <p class="exito-titulo">Boleta cobrada exitosamente</p>
-            <p class="exito-monto">Monto: <span id="ventanilla-monto" data-testid="ventanilla-monto" [attr.data-monto]="ex.monto">$ {{ ex.monto }}</span></p>
+            <p class="exito-titulo">{{ 'ventanilla.exito' | t }}</p>
+            <p class="exito-monto">{{ 'ventanilla.montoEtiqueta' | t }} <span id="ventanilla-monto" data-testid="ventanilla-monto" [attr.data-monto]="ex.monto">$ {{ ex.monto }}</span></p>
           </div>
         }
 
@@ -64,1576 +74,1586 @@
           <button type="button" class="boton-primario" id="ventanilla-cobrar" data-testid="ventanilla-cobrar"
                   [disabled]="cobrandoVentanilla()" (click)="alCobrarVentanilla()">
             @if (cobrandoVentanilla()) {
-              <span class="spinner-chico" aria-hidden="true"></span> Cobrando…
+              <span class="spinner-chico" aria-hidden="true"></span> {{ 'ventanilla.cobrando' | t }}
             } @else {
-              Cobrar boleta
+              {{ 'ventanilla.cobrar' | t }}
             }
           </button>
         </div>
       </form>
     </div>
 
-    <p class="franja-simulacion" data-testid="aviso-simulacion" role="note">Simulación para practicar automatización de pruebas. No es un banco ni un servicio financiero. Todos los datos son ficticios.</p>
+    <p class="franja-simulacion" data-testid="aviso-simulacion" role="note">{{ 'comun.avisoSimulacion' | t }}</p>
   </main>
 } @else {
   <main class="portada" data-testid="portada">
     <canvas class="bruma" id="bruma" #brumaCanvas data-testid="portada-bruma" [attr.data-estado]="estadoBruma()" aria-hidden="true"></canvas>
 
     <header class="barra">
-      <a class="marca" href="#" aria-label="zeroFeeBank, inicio" data-testid="marca-inicio" (click)="alHacerClicMarca($event)">Zero<b>Fee</b>Bank</a>
-      @if (!emailUsuario()) {
-        <div class="acciones-portada">
-          <a href="#ventanilla" class="link-ventanilla" id="ir-ventanilla" data-testid="ir-ventanilla" role="link">Ventanilla</a>
-          <button class="boton-login" id="login-abrir" #loginAbrir type="button" data-testid="login-abrir"
-                  popovertarget="login-popover" aria-controls="login-popover" [attr.aria-expanded]="popoverAbierto() ? 'true' : 'false'">Login</button>
-        </div>
-      } @else {
-        <button type="button" class="nav-hamburguesa" id="nav-hamburguesa" #navHamburguesa
-                data-testid="nav-hamburguesa"
-                [attr.aria-expanded]="hamburguesaAbierta() ? 'true' : 'false'"
-                (click)="toggleHamburguesa()"
-                aria-label="Abrir menú de navegación">
-          <span class="hamburguesa-linea"></span>
-          <span class="hamburguesa-linea"></span>
-          <span class="hamburguesa-linea"></span>
-        </button>
-
-        <nav class="nav-panel" id="nav-panel" data-testid="nav-panel" [attr.data-abierto]="hamburguesaAbierta() ? 'true' : 'false'">
-          <div class="nav-cuentas-contenedor"
-               (mouseenter)="alEntrarCuentas()"
-               (mouseleave)="alSalirCuentas()">
-            <a href="#resumen" class="nav-link nav-cuentas" id="nav-cuentas" #navCuentas
-               data-testid="nav-cuentas" role="link"
-               [attr.aria-expanded]="menuCuentasAbierto() ? 'true' : 'false'"
-               (click)="alActivarCuentas($event)"
-               (keydown.arrowdown)="alFlechaAbajoCuentas($event)">
-              Cuentas <span class="flecha" aria-hidden="true">▾</span>
-            </a>
-            <div class="nav-cuentas-menu" id="nav-cuentas-menu" data-testid="nav-cuentas-menu">
-              <a href="#resumen" class="nav-sublink nav-resumen" id="nav-resumen" #navResumen
-                 data-testid="nav-resumen" tabindex="0"
-                 (click)="alActivarResumen($event)">
-                Resumen
-              </a>
-              <a href="#abrir-cuenta" class="nav-sublink nav-abrir-cuenta" id="nav-abrir-cuenta" #navAbrirCuenta
-                 data-testid="nav-abrir-cuenta" tabindex="0" role="link"
-                 (click)="alActivarAbrirCuenta($event)">
-                Abrir cuenta
-              </a>
-            </div>
+      <a class="marca" href="#" [attr.aria-label]="'comun.marcaInicio' | t" data-testid="marca-inicio" (click)="alHacerClicMarca($event)">Zero<b>Fee</b>Bank</a>
+      <div class="barra-derecha">
+        <select class="selector-idioma"
+                data-testid="idioma-selector"
+                [attr.aria-label]="'idioma.selector' | t"
+                [value]="idiomaActual()"
+                (change)="alCambiarIdioma($event)">
+          <option value="es">{{ 'idioma.es' | t }}</option>
+          <option value="en">{{ 'idioma.en' | t }}</option>
+        </select>
+        @if (!emailUsuario()) {
+          <div class="acciones-portada">
+            <a href="#ventanilla" class="link-ventanilla" id="ir-ventanilla" data-testid="ir-ventanilla" role="link">{{ 'nav.ventanilla' | t }}</a>
+            <button class="boton-login" id="login-abrir" #loginAbrir type="button" data-testid="login-abrir"
+                    popovertarget="login-popover" aria-controls="login-popover" [attr.aria-expanded]="popoverAbierto() ? 'true' : 'false'">{{ 'nav.login' | t }}</button>
           </div>
-
-          <a href="#transferir" class="nav-link nav-transferir" id="nav-transferir" #navTransferir
-             data-testid="nav-transferir" role="link"
-             (click)="alActivarTransferir($event)">
-            Transferir
-          </a>
-
-          <a href="#movimientos" class="nav-link nav-movimientos" id="nav-movimientos" #navMovimientos
-             data-testid="nav-movimientos" role="link"
-             (click)="alActivarMovimientos($event)">
-            Movimientos
-          </a>
-
-          <a href="#pagos" class="nav-link nav-pagos" id="nav-pagos" #navPagos
-             data-testid="nav-pagos" role="link"
-             (click)="alActivarPagos($event)">
-            Pagos
-          </a>
-
-          <a href="#boletas" class="nav-link nav-boletas" id="nav-boletas" #navBoletas
-             data-testid="nav-boletas" role="link"
-             (click)="alActivarBoletas($event)">
-            Boletas
-          </a>
-
-          <a href="#contacto" class="nav-link nav-contacto" id="nav-contacto" #navContacto
-             data-testid="nav-contacto" role="link"
-             (click)="alActivarContacto($event)">
-            Contacto
-          </a>
-
-        <div class="nav-usuario-contenedor">
-          <button type="button" class="nav-usuario" id="nav-usuario" #navUsuario
-                  data-testid="nav-usuario"
-                  [attr.aria-expanded]="menuUsuarioAbierto() ? 'true' : 'false'"
-                  (click)="toggleMenuUsuario()">
-            <span class="usuario-email" id="usuario-email" data-testid="usuario-email">{{ emailUsuario() }}</span>
-            <span class="flecha" aria-hidden="true">▾</span>
+        } @else {
+          <button type="button" class="nav-hamburguesa" id="nav-hamburguesa" #navHamburguesa
+                  data-testid="nav-hamburguesa"
+                  [attr.aria-expanded]="hamburguesaAbierta() ? 'true' : 'false'"
+                  (click)="toggleHamburguesa()"
+                  [attr.aria-label]="'nav.abrirMenu' | t">
+            <span class="hamburguesa-linea"></span>
+            <span class="hamburguesa-linea"></span>
+            <span class="hamburguesa-linea"></span>
           </button>
-          <div class="nav-usuario-menu" id="nav-usuario-menu" data-testid="nav-usuario-menu">
-            <button type="button" class="boton-salir" id="salir" data-testid="salir" (click)="cerrarSesion()">Salir</button>
-          </div>
-        </div>
-      </nav>
+
+          <nav class="nav-panel" id="nav-panel" data-testid="nav-panel" [attr.data-abierto]="hamburguesaAbierta() ? 'true' : 'false'">
+            <div class="nav-cuentas-contenedor"
+                 (mouseenter)="alEntrarCuentas()"
+                 (mouseleave)="alSalirCuentas()">
+              <a href="#resumen" class="nav-link nav-cuentas" id="nav-cuentas" #navCuentas
+                 data-testid="nav-cuentas" role="link"
+                 [attr.aria-expanded]="menuCuentasAbierto() ? 'true' : 'false'"
+                 (click)="alActivarCuentas($event)"
+                 (keydown.arrowdown)="alFlechaAbajoCuentas($event)">
+                {{ 'nav.cuentas' | t }} <span class="flecha" aria-hidden="true">▾</span>
+              </a>
+              <div class="nav-cuentas-menu" id="nav-cuentas-menu" data-testid="nav-cuentas-menu">
+                <a href="#resumen" class="nav-sublink nav-resumen" id="nav-resumen" #navResumen
+                   data-testid="nav-resumen" tabindex="0"
+                   (click)="alActivarResumen($event)">
+                  {{ 'nav.resumen' | t }}
+                </a>
+                <a href="#abrir-cuenta" class="nav-sublink nav-abrir-cuenta" id="nav-abrir-cuenta" #navAbrirCuenta
+                   data-testid="nav-abrir-cuenta" tabindex="0" role="link"
+                   (click)="alActivarAbrirCuenta($event)">
+                  {{ 'nav.abrirCuenta' | t }}
+                </a>
+              </div>
+            </div>
+
+            <a href="#transferir" class="nav-link nav-transferir" id="nav-transferir" #navTransferir
+               data-testid="nav-transferir" role="link"
+               (click)="alActivarTransferir($event)">
+              {{ 'nav.transferir' | t }}
+            </a>
+
+            <a href="#movimientos" class="nav-link nav-movimientos" id="nav-movimientos" #navMovimientos
+               data-testid="nav-movimientos" role="link"
+               (click)="alActivarMovimientos($event)">
+              {{ 'nav.movimientos' | t }}
+            </a>
+
+            <a href="#pagos" class="nav-link nav-pagos" id="nav-pagos" #navPagos
+               data-testid="nav-pagos" role="link"
+               (click)="alActivarPagos($event)">
+              {{ 'nav.pagos' | t }}
+            </a>
+
+            <a href="#boletas" class="nav-link nav-boletas" id="nav-boletas" #navBoletas
+               data-testid="nav-boletas" role="link"
+               (click)="alActivarBoletas($event)">
+              {{ 'nav.boletas' | t }}
+            </a>
+
+            <a href="#contacto" class="nav-link nav-contacto" id="nav-contacto" #navContacto
+               data-testid="nav-contacto" role="link"
+               (click)="alActivarContacto($event)">
+              {{ 'nav.contacto' | t }}
+            </a>
+
+            <div class="nav-usuario-contenedor">
+              <button type="button" class="nav-usuario" id="nav-usuario" #navUsuario
+                      data-testid="nav-usuario"
+                      [attr.aria-expanded]="menuUsuarioAbierto() ? 'true' : 'false'"
+                      (click)="toggleMenuUsuario()">
+                <span class="usuario-email" id="usuario-email" data-testid="usuario-email">{{ emailUsuario() }}</span>
+                <span class="flecha" aria-hidden="true">▾</span>
+              </button>
+              <div class="nav-usuario-menu" id="nav-usuario-menu" data-testid="nav-usuario-menu">
+                <button type="button" class="boton-salir" id="salir" data-testid="salir" (click)="cerrarSesion()">{{ 'nav.salir' | t }}</button>
+              </div>
+            </div>
+          </nav>
+        }
+      </div>
+    </header>
+
+    @if (avisoSesion(); as aviso) {
+      <p class="aviso" id="sesion-aviso" data-testid="sesion-aviso"
+         role="status"
+         [attr.data-motivo]="aviso.motivo"
+         [attr.data-codigo]="aviso.codigo ?? null">
+        {{ textoAvisoSesion(aviso) }}
+      </p>
     }
-  </header>
 
-  @if (avisoSesion(); as aviso) {
-    <p class="aviso" id="sesion-aviso" data-testid="sesion-aviso"
-       role="status"
-       [attr.data-motivo]="aviso.motivo"
-       [attr.data-codigo]="aviso.codigo ?? null">
-      {{ aviso.mensaje }}
-    </p>
-  }
-
-  @if (!emailUsuario()) {
-    <div class="mensaje">
-      <h1><span>Sin comisiones.</span> <span>Sin letra chica.</span> <span>Y no somos humo.</span></h1>
-    </div>
-  } @else {
-    @if (vistaActual() === 'resumen') {
-      <section class="cuentas-region" id="cuentas-region" data-testid="cuentas-region"
-               [attr.data-estado]="estadoCuentas()"
-               [attr.aria-busy]="estadoCuentas() === 'cargando' ? 'true' : 'false'"
-               aria-live="polite">
-        @if (estadoCuentas() === 'cargando') {
-          <div class="cuentas-cargando" data-testid="cuentas-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Cargando cuentas...</span>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'vacio') {
-          <div class="cuentas-vacio" data-testid="cuentas-vacio">
-            <p>No tienes cuentas registradas actualmente.</p>
-            <button type="button" class="boton-abrir-primera" id="abrir-primera-cuenta" data-testid="abrir-primera-cuenta"
-                    (click)="alActivarAbrirCuenta($event)">
-              Abrir cuenta
-            </button>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'error') {
-          <div class="cuentas-error" data-testid="cuentas-error"
-               [attr.data-codigo]="errorCuentas()?.codigo ?? null"
-               [attr.data-motivo]="errorCuentas()?.motivo ?? null">
-            <p>{{ errorCuentas()?.mensaje || 'Error al obtener la información de tus cuentas.' }}</p>
-            <button type="button" class="boton-reintentar" data-testid="cuentas-reintentar" (click)="cargarCuentas()">
-              Reintentar
-            </button>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'listo') {
-          <div class="cuentas-contenedor">
-            <div class="cuentas-encabezado">
-              <h2 class="cuentas-titulo">Resumen de cuentas</h2>
-            </div>
-            <table class="cuentas-tabla" data-testid="cuentas-tabla">
-              <caption class="sr-only">Resumen de tus cuentas bancarias</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Identificador</th>
-                  <th scope="col">Tipo</th>
-                  <th scope="col">Saldo</th>
-                  <th scope="col"><span class="sr-only">Acciones</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (cuenta of cuentas(); track cuenta.id) {
-                  <tr data-testid="cuenta-fila" [attr.data-cuenta-id]="cuenta.id">
-                    <td class="celda-id">
-                      <span data-testid="cuenta-id" [attr.data-cuenta-id]="cuenta.id"><span aria-hidden="true">{{ abreviar(cuenta.id) }}</span><span class="sr-only">{{ cuenta.id }}</span></span>
-                    </td>
-                    <td class="celda-tipo">
-                      <span data-testid="cuenta-tipo" [attr.data-tipo]="cuenta.tipo">{{ cuenta.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }}</span>
-                    </td>
-                    <td class="celda-saldo">
-                      <span data-testid="cuenta-saldo" [attr.data-monto]="cuenta.saldo">$ {{ cuenta.saldo }}</span>
-                    </td>
-                    <td class="celda-acciones">
-                      <button type="button" class="boton-copiar" data-testid="cuenta-copiar-id"
-                              [attr.aria-label]="'Copiar ID de cuenta ' + cuenta.id"
-                              (click)="copiarId(cuenta.id)">
-                        Copiar
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </section>
-    } @else if (vistaActual() === 'transferir') {
-      <section class="transferir-region" id="transferir-region" aria-live="polite">
-        @if (estadoCuentas() === 'cargando') {
-          <div class="cuentas-cargando" data-testid="cuentas-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Cargando cuentas...</span>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'vacio') {
-          <div class="transferir-sin-cuentas" data-testid="transferir-sin-cuentas">
-            <p>Necesitas al menos una cuenta para transferir.</p>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'error') {
-          <div class="cuentas-error" data-testid="cuentas-error"
-               [attr.data-codigo]="errorCuentas()?.codigo ?? null"
-               [attr.data-motivo]="errorCuentas()?.motivo ?? null">
-            <p>{{ errorCuentas()?.mensaje || 'Error al obtener la información de tus cuentas.' }}</p>
-            <button type="button" class="boton-reintentar" data-testid="cuentas-reintentar" (click)="cargarCuentas()">
-              Reintentar
-            </button>
-          </div>
-        }
-
-        @if (estadoCuentas() === 'listo') {
-          @if (transferenciaExitosa(); as exito) {
-            <section class="transferir-exito" id="transferir-exito" data-testid="transferir-exito" role="status" aria-labelledby="exito-titulo">
-              <div class="exito-cabeza">
-                <h2 id="exito-titulo">Transferencia realizada</h2>
-                <p class="exito-monto">$ {{ exito.monto }}</p>
-                @if (exito.repetida) {
-                  <span class="chip-repetida" data-testid="transferir-repetida">Respuesta repetida: el banco no la volvió a ejecutar</span>
-                }
-              </div>
-
-              <dl class="exito-detalles">
-                <dt>Origen</dt>
-                <dd [attr.data-cuenta-id]="exito.origenId"><span aria-hidden="true">{{ abreviar(exito.origenId) }}</span><span class="sr-only">{{ exito.origenId }}</span></dd>
-                <dt>Destino</dt>
-                <dd [attr.data-cuenta-id]="exito.destinoId"><span aria-hidden="true">{{ abreviar(exito.destinoId) }}</span><span class="sr-only">{{ exito.destinoId }}</span></dd>
-                <dt>N° de operación</dt>
-                <dd data-testid="transferir-transaccion-id">{{ exito.transaccionId }}</dd>
-              </dl>
-
-              @if (errorPdf()) {
-                <p class="aviso-error-pdf" role="alert">{{ errorPdf() }}</p>
-              }
-
-              <div class="exito-acciones">
-                <button type="button" class="btn-comprobante" data-testid="transferir-comprobante-pdf" (click)="descargarComprobantePdf(exito.transaccionId)">
-                  Descargar comprobante (PDF)
-                </button>
-                <button type="button" class="btn-nueva" data-testid="transferir-nueva" (click)="nuevaTransferencia()">
-                  Nueva transferencia
-                </button>
-                <a href="#resumen" class="link-volver-cuentas" (click)="alActivarResumen($event)">
-                  Ver cuentas
-                </a>
-              </div>
-            </section>
-          } @else if (transferenciaOtroBancoExitosa(); as exitoBanco) {
-            <section class="transferir-exito" id="transferir-exito-banco" role="status" aria-labelledby="exito-banco-titulo">
-              <div class="exito-cabeza">
-                <h2 id="exito-banco-titulo">Transferencia realizada</h2>
-                <p class="exito-monto"
-                   id="transferir-banco-monto"
-                   data-testid="transferir-banco-monto"
-                   [attr.data-monto]="exitoBanco.monto">
-                  $ {{ exitoBanco.monto }}
-                </p>
-              </div>
-
-              <dl class="exito-detalles">
-                <dt>Origen</dt>
-                <dd class="mono" [attr.data-cuenta-id]="exitoBanco.cuentaOrigenId"><span aria-hidden="true">{{ abreviar(exitoBanco.cuentaOrigenId) }}</span><span class="sr-only">{{ exitoBanco.cuentaOrigenId }}</span></dd>
-                <dt>Banco destino</dt>
-                <dd id="transferir-banco-nombre"
-                    data-testid="transferir-banco-nombre"
-                    [attr.data-banco]="exitoBanco.banco">
-                  {{ nombreBanco(exitoBanco.banco) }}
-                </dd>
-                <dt>N° de cuenta</dt>
-                <dd class="mono"
-                    id="transferir-banco-numero"
-                    data-testid="transferir-banco-numero"
-                    [attr.data-numero]="exitoBanco.numeroCuenta">
-                  {{ exitoBanco.numeroCuenta }}
-                </dd>
-                <dt>Tipo de cuenta</dt>
-                <dd id="transferir-banco-tipo"
-                    data-testid="transferir-banco-tipo"
-                    [attr.data-tipo]="exitoBanco.tipoCuenta">
-                  {{ exitoBanco.tipoCuenta === 'AHORRO' ? 'Ahorro' : 'Corriente' }}
-                </dd>
-                <dt>Fecha</dt>
-                <dd id="transferir-banco-fecha"
-                    data-testid="transferir-banco-fecha"
-                    [attr.data-realizada-en]="exitoBanco.realizadaEn">
-                  {{ formatearFechaUtc(exitoBanco.realizadaEn) }}
-                </dd>
-                <dt>N° de operación</dt>
-                <dd class="mono">{{ exitoBanco.transaccionId }}</dd>
-              </dl>
-
-              <div class="exito-acciones">
-                <button type="button" class="btn-nueva" data-testid="transferir-nueva" (click)="nuevaTransferencia()">
-                  Nueva transferencia
-                </button>
-                <a href="#resumen" class="link-volver-cuentas" (click)="alActivarResumen($event)">
-                  Ver cuentas
-                </a>
-              </div>
-            </section>
-          } @else {
-            <form class="transferir-form" id="transferir-form" data-testid="transferir-form"
-                  novalidate
-                  [attr.data-estado]="estadoTransferencia()"
-                  [attr.aria-busy]="estadoTransferencia() === 'enviando' ? 'true' : 'false'"
-                  (submit)="$event.preventDefault()">
-              <h2 class="transferir-titulo">Transferir</h2>
-
-              <div class="transferir-pasos" id="transferir-pasos" data-testid="transferir-pasos" role="tablist" aria-label="Pasos de la transferencia">
-                <button type="button"
-                        class="paso-tab"
-                        id="paso-tab-origen"
-                        #tabOrigen
-                        data-testid="transferir-paso-origen"
-                        role="tab"
-                        [attr.aria-selected]="pasoActual() === 'origen' ? 'true' : 'false'"
-                        aria-controls="panel-origen"
-                        [attr.tabindex]="pasoActual() === 'origen' ? 0 : -1"
-                        (click)="alHacerClicPaso('origen')"
-                        (keydown)="alPulsarTeclaTab($event)">
-                  Origen
-                </button>
-                <button type="button"
-                        class="paso-tab"
-                        id="paso-tab-destino"
-                        #tabDestino
-                        data-testid="transferir-paso-destino"
-                        role="tab"
-                        [attr.aria-selected]="pasoActual() === 'destino' ? 'true' : 'false'"
-                        aria-controls="panel-destino"
-                        [attr.tabindex]="pasoActual() === 'destino' ? 0 : -1"
-                        (click)="alHacerClicPaso('destino')"
-                        (keydown)="alPulsarTeclaTab($event)">
-                  Destino
-                </button>
-                <button type="button"
-                        class="paso-tab"
-                        id="paso-tab-revisar"
-                        #tabRevisar
-                        data-testid="transferir-paso-revisar"
-                        role="tab"
-                        [attr.aria-selected]="pasoActual() === 'revisar' ? 'true' : 'false'"
-                        [attr.aria-disabled]="revisarHabilitado() ? 'false' : 'true'"
-                        aria-controls="panel-revisar"
-                        [attr.tabindex]="pasoActual() === 'revisar' ? 0 : -1"
-                        (click)="alHacerClicPaso('revisar')"
-                        (keydown)="alPulsarTeclaTab($event)">
-                  Revisar
-                </button>
-              </div>
-
-              <div id="panel-origen" role="tabpanel" aria-labelledby="paso-tab-origen" [hidden]="pasoActual() !== 'origen'" class="paso-panel">
-                <div class="campo">
-                  <label for="transferir-origen">Origen</label>
-                  <select id="transferir-origen"
-                          data-testid="transferir-origen"
-                          [disabled]="estadoTransferencia() === 'enviando'"
-                          [value]="origenSeleccionado()"
-                          (change)="alCambiarOrigen($any($event.target).value)">
-                    @for (c of cuentas(); track c.id) {
-                      <option [value]="c.id" [attr.data-tipo]="c.tipo" [selected]="c.id === origenSeleccionado()"
-                              [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id + ' · $ ' + c.saldo">
-                        {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
-                      </option>
-                    }
-                  </select>
-                </div>
-                <div class="paso-acciones">
-                  <button type="button"
-                          class="boton-primario"
-                          id="transferir-origen-siguiente"
-                          data-testid="transferir-origen-siguiente"
-                          [disabled]="estadoTransferencia() === 'enviando'"
-                          (click)="irAPaso('destino')">
-                    Siguiente
-                  </button>
-                </div>
-              </div>
-
-              <div id="panel-destino" role="tabpanel" aria-labelledby="paso-tab-destino" [hidden]="pasoActual() !== 'destino'" class="paso-panel">
-                <fieldset class="campo">
-                  <legend>Destino</legend>
-                  <div class="opciones-modo">
-                    <label class="opcion-radio">
-                      <input type="radio"
-                             name="modoDestino"
-                             id="modo-propia"
-                             value="propia"
-                             data-testid="transferir-destino-modo-propia"
-                             [checked]="modoDestino() === 'propia'"
-                             [disabled]="estadoTransferencia() === 'enviando'"
-                             (change)="modoDestino.set('propia')">
-                      Mis cuentas
-                    </label>
-                    <label class="opcion-radio">
-                      <input type="radio"
-                             name="modoDestino"
-                             id="modo-otra"
-                             value="otra"
-                             data-testid="transferir-destino-modo-otra"
-                             [checked]="modoDestino() === 'otra'"
-                             [disabled]="estadoTransferencia() === 'enviando'"
-                             (change)="modoDestino.set('otra')">
-                      Otras cuentas
-                    </label>
-                    <label class="opcion-radio">
-                      <input type="radio"
-                             name="modoDestino"
-                             id="modo-banco"
-                             value="banco"
-                             data-testid="transferir-destino-modo-banco"
-                             [checked]="modoDestino() === 'banco'"
-                             [disabled]="estadoTransferencia() === 'enviando'"
-                             (change)="modoDestino.set('banco')">
-                      Otro banco
-                    </label>
-                  </div>
-
-                  @if (modoDestino() === 'propia') {
-                    <div class="campo-sub">
-                      <label for="transferir-destino-propia" class="sr-only">Cuenta propia de destino</label>
-                      @if (cuentasDestinoPropias().length > 0) {
-                        <select id="transferir-destino-propia"
-                                data-testid="transferir-destino-propia"
-                                [disabled]="estadoTransferencia() === 'enviando'"
-                                [value]="destinoPropia()"
-                                (change)="destinoPropia.set($any($event.target).value)">
-                          @for (c of cuentasDestinoPropias(); track c.id) {
-                            <option [value]="c.id" [attr.data-tipo]="c.tipo" [selected]="c.id === destinoPropia()"
-                                    [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id + ' · $ ' + c.saldo">
-                              {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
-                            </option>
-                          }
-                        </select>
-                      } @else {
-                        <p class="ayuda">No tienes otra cuenta propia. Elige «Otras cuentas».</p>
-                      }
-                    </div>
-                  } @else if (modoDestino() === 'otra') {
-                    <div class="campo-sub">
-                      <label for="transferir-destino-id" class="sr-only">Id de la cuenta de destino</label>
-                      <input type="text"
-                             id="transferir-destino-id"
-                             class="input-mono"
-                             data-testid="transferir-destino-id"
-                             autocomplete="off"
-                             spellcheck="false"
-                             placeholder="00000000-0000-0000-0000-000000000000"
-                             [disabled]="estadoTransferencia() === 'enviando'"
-                             [value]="destinoOtra()"
-                             (input)="destinoOtra.set($any($event.target).value)">
-                    </div>
-                  } @else if (modoDestino() === 'banco') {
-                    <div class="campo-sub">
-                      <div class="campo">
-                        <label for="transferir-destino-banco">Banco</label>
-                        <select id="transferir-destino-banco"
-                                data-testid="transferir-destino-banco"
-                                [disabled]="estadoTransferencia() === 'enviando'"
-                                [value]="destinoBanco()"
-                                (change)="destinoBanco.set($any($event.target).value)">
-                          <option value="ASERCION">Banco Aserción</option>
-                          <option value="FIXTURE">Banco Fixture</option>
-                          <option value="STUB">Banco Stub</option>
-                          <option value="SANDBOX">Banco Sandbox</option>
-                          <option value="MOCK">Banco Mock</option>
-                        </select>
-                      </div>
-
-                      <div class="campo">
-                        <label for="transferir-destino-numero">N° de cuenta</label>
-                        <input type="text"
-                               id="transferir-destino-numero"
-                               class="input-mono"
-                               data-testid="transferir-destino-numero"
-                               autocomplete="off"
-                               spellcheck="false"
-                               placeholder="12345678"
-                               [disabled]="estadoTransferencia() === 'enviando'"
-                               [value]="destinoNumero()"
-                               (input)="destinoNumero.set($any($event.target).value)">
-                      </div>
-
-                      <div class="campo">
-                        <label for="transferir-destino-tipo">Tipo de cuenta</label>
-                        <select id="transferir-destino-tipo"
-                                data-testid="transferir-destino-tipo"
-                                [disabled]="estadoTransferencia() === 'enviando'"
-                                [value]="destinoTipo()"
-                                (change)="destinoTipo.set($any($event.target).value)">
-                          <option value="CORRIENTE">Corriente</option>
-                          <option value="AHORRO">Ahorro</option>
-                        </select>
-                      </div>
-
-                      <p class="ayuda"
-                         id="transferir-banco-tope"
-                         data-testid="transferir-banco-tope">
-                        Máximo 200,00 USD por día (UTC) por cuenta de origen
-                      </p>
-                    </div>
-                  }
-                </fieldset>
-
-                <div class="campo">
-                  <label for="transferir-monto">Monto</label>
-                  <div class="con-prefijo">
-                    <span aria-hidden="true">$</span>
-                    <input type="text"
-                           id="transferir-monto"
-                           data-testid="transferir-monto"
-                           inputmode="decimal"
-                           autocomplete="off"
-                           placeholder="150.00"
-                           [disabled]="estadoTransferencia() === 'enviando'"
-                           [value]="monto()"
-                           (input)="monto.set($any($event.target).value)">
-                  </div>
-                </div>
-
-                <div class="paso-acciones">
-                  <button type="button"
-                          class="boton-secundario"
-                          id="transferir-destino-volver"
-                          data-testid="transferir-destino-volver"
-                          [disabled]="estadoTransferencia() === 'enviando'"
-                          (click)="irAPaso('origen')">
-                    Volver
-                  </button>
-                  <button type="button"
-                          class="boton-primario"
-                          id="transferir-destino-siguiente"
-                          data-testid="transferir-destino-siguiente"
-                          [attr.aria-disabled]="revisarHabilitado() ? 'false' : 'true'"
-                          (click)="alHacerClicDestinoSiguiente()">
-                    Siguiente
-                  </button>
-                </div>
-              </div>
-
-              <div id="panel-revisar" role="tabpanel" aria-labelledby="paso-tab-revisar" [hidden]="pasoActual() !== 'revisar'" class="paso-panel">
-                <div class="revisar-resumen">
-                  <dl class="revisar-datos">
-                    <dt>Origen</dt>
-                    <dd class="mono" [attr.data-cuenta-id]="origenSeleccionado()"><span aria-hidden="true">{{ abreviar(origenSeleccionado()) }}</span><span class="sr-only">{{ origenSeleccionado() }}</span></dd>
-                    @if (modoDestino() === 'banco') {
-                      <dt>Banco destino</dt>
-                      <dd>
-                        <span id="transferir-revisar-banco"
-                              data-testid="transferir-revisar-banco"
-                              [attr.data-banco]="destinoBanco()">
-                          {{ nombreBanco(destinoBanco()) }}
-                        </span>
-                      </dd>
-                      <dt>N° de cuenta</dt>
-                      <dd class="mono">
-                        <span id="transferir-revisar-numero"
-                              data-testid="transferir-revisar-numero"
-                              [attr.data-numero]="destinoNumero()">
-                          {{ destinoNumero() }}
-                        </span>
-                      </dd>
-                      <dt>Tipo de cuenta</dt>
-                      <dd>
-                        <span id="transferir-revisar-tipo"
-                              data-testid="transferir-revisar-tipo"
-                              [attr.data-tipo]="destinoTipo()">
-                          {{ destinoTipo() === 'AHORRO' ? 'Ahorro' : 'Corriente' }}
-                        </span>
-                      </dd>
-                    } @else if (modoDestino() === 'propia') {
-                      <dt>Destino</dt>
-                      <dd class="mono" [attr.data-cuenta-id]="destinoPropia().trim()"><span aria-hidden="true">{{ abreviar(destinoPropia().trim()) }}</span><span class="sr-only">{{ destinoPropia().trim() }}</span></dd>
-                    } @else {
-                      <dt>Destino</dt>
-                      <dd class="mono">{{ destinoFinal() }}</dd>
-                    }
-                    <dt>Monto</dt>
-                    <dd>
-                      <span id="transferir-revisar-monto"
-                            data-testid="transferir-revisar-monto"
-                            [attr.data-monto]="monto().trim()">
-                        $ {{ monto().trim() }}
-                      </span>
-                    </dd>
-                  </dl>
-                </div>
-
-                @if (errorTransferencia(); as err) {
-                  <div class="transferir-error"
-                       id="transferir-error"
-                       data-testid="transferir-error"
-                       role="alert"
-                       [attr.data-codigo]="err.codigo ?? null">
-                    <p>{{ textoError(err.codigo, err.mensaje) }}</p>
-                  </div>
-                }
-
-                @if (sinRespuesta()) {
-                  <div class="transferir-sin-respuesta"
-                       id="transferir-sin-respuesta"
-                       data-testid="transferir-sin-respuesta"
-                       role="alert">
-                    <p>No recibimos respuesta del servidor. La transferencia podría haberse procesado.</p>
-                    <button type="button"
-                            class="boton-secundario"
-                            id="transferir-reintentar"
-                            data-testid="transferir-reintentar"
-                            [disabled]="estadoTransferencia() === 'enviando'"
-                            (click)="reintentarTransferencia()">
-                      Reintentar
-                    </button>
-                  </div>
-                }
-
-                <div class="paso-acciones">
-                  <button type="button"
-                          class="boton-secundario"
-                          id="transferir-revisar-volver"
-                          data-testid="transferir-revisar-volver"
-                          [disabled]="estadoTransferencia() === 'enviando'"
-                          (click)="irAPaso('destino')">
-                    Volver
-                  </button>
-                  <button type="button"
-                          class="boton-primario"
-                          id="transferir-enviar"
-                          #transferirEnviar
-                          data-testid="transferir-enviar"
-                          [disabled]="estadoTransferencia() === 'enviando'"
-                          [attr.aria-disabled]="estadoTransferencia() === 'enviando' ? 'true' : 'false'"
-                          (click)="abrirModalConfirmacion()">
-                    @if (estadoTransferencia() === 'enviando') {
-                      <span class="spinner-chico" aria-hidden="true"></span> Transfiriendo…
-                    } @else {
-                      Transferir
-                    }
-                  </button>
-                </div>
-              </div>
-            </form>
-          }
-        }
-      </section>
-
-      <zfb-dialogo
-        #dialogoConfirmar
-        tipo="confirmar"
-        [abierto]="modalConfirmacionAbierto()"
-        [monto]="monto().trim()"
-        (alAceptar)="confirmarTransferencia()"
-        (alCancelar)="cancelarTransferencia()"
-      ></zfb-dialogo>
-    } @else if (vistaActual() === 'boletas') {
-      <section class="boletas-region" id="boletas-region" data-testid="boletas-region"
-               [attr.data-estado]="estadoBoletas()"
-               [attr.aria-busy]="estadoBoletas() === 'cargando' ? 'true' : 'false'"
-               aria-live="polite">
-
-        @if (estadoBoletas() === 'cargando') {
-          <div class="boletas-cargando" id="boletas-cargando" data-testid="boletas-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Cargando boletas...</span>
-          </div>
-        }
-
-        @if (estadoBoletas() === 'error') {
-          <div class="boletas-error" id="boletas-error" data-testid="boletas-error" role="alert">
-            <p>Error al obtener la información de boletas.</p>
-            <button type="button" class="boton-reintentar" id="boletas-reintentar" data-testid="boletas-reintentar" (click)="cargarBoletasYcuentas()">
-              Reintentar
-            </button>
-          </div>
-        }
-
-        @if (accionError(); as err) {
-          <div class="boletas-accion-error" id="boletas-accion-error" data-testid="boletas-accion-error" role="alert"
-               [attr.data-codigo]="err.codigo" [attr.data-boleta-id]="err.boletaId">
-            <p>{{ textoError(err.codigo, err.mensaje) }}</p>
-          </div>
-        }
-
-        @if (accionSinRespuesta()) {
-          <div class="boletas-accion-sin-respuesta" id="boletas-accion-sin-respuesta" data-testid="boletas-accion-sin-respuesta" role="alert">
-            <p>No se recibió respuesta del servidor para la acción.</p>
-          </div>
-        }
-
-        @if (errorPdfBoletas(); as errPdf) {
-          <div class="boletas-error-pdf" role="alert">
-            <p>{{ errPdf }}</p>
-          </div>
-        }
-
-        @if (estadoBoletas() === 'listo' || estadoBoletas() === 'vacio') {
-          <div class="boletas-pasos" role="tablist" aria-label="Boletas">
-            <button type="button"
-                    class="paso-tab"
-                    id="boletas-pestana-lista"
-                    #pestanaBoletasLista
-                    data-testid="boletas-pestana-lista"
-                    role="tab"
-                    [attr.aria-selected]="pestanaBoletas() === 'lista' ? 'true' : 'false'"
-                    aria-controls="boletas-panel-lista"
-                    [attr.tabindex]="pestanaBoletas() === 'lista' ? 0 : -1"
-                    (click)="alSeleccionarPestanaBoletas('lista')"
-                    (keydown)="alPulsarTeclaPestanaBoletas($event)">
-              Mis boletas
-            </button>
-            <button type="button"
-                    class="paso-tab"
-                    id="boletas-pestana-emitir"
-                    #pestanaBoletasEmitir
-                    data-testid="boletas-pestana-emitir"
-                    role="tab"
-                    [attr.aria-selected]="pestanaBoletas() === 'emitir' ? 'true' : 'false'"
-                    aria-controls="boletas-panel-emitir"
-                    [attr.tabindex]="pestanaBoletas() === 'emitir' ? 0 : -1"
-                    (click)="alSeleccionarPestanaBoletas('emitir')"
-                    (keydown)="alPulsarTeclaPestanaBoletas($event)">
-              Emitir
-            </button>
-          </div>
-
-          <div id="boletas-panel-lista"
-               class="boletas-panel"
-               data-testid="boletas-panel-lista"
-               role="tabpanel"
-               aria-labelledby="boletas-pestana-lista"
-               [hidden]="pestanaBoletas() !== 'lista'">
-            @if (estadoBoletas() === 'vacio') {
-              <div class="boletas-vacio" id="boletas-vacio" data-testid="boletas-vacio">
-                <p>No tienes boletas registradas actualmente.</p>
-              </div>
-            }
-
-            @if (estadoBoletas() === 'listo') {
-              <div class="boletas-contenedor">
-                <div class="boletas-encabezado">
-                  <h2 class="boletas-titulo">Boletas de garantía</h2>
-                </div>
-                <div class="tabla-scroll">
-                  <table class="boletas-tabla" data-testid="boletas-tabla">
-                    <caption class="sr-only">Listado de boletas de garantía</caption>
-                    <thead>
-                      <tr>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Monto</th>
-                        <th scope="col">Cuenta de origen</th>
-                        <th scope="col">Emitida en</th>
-                        <th scope="col">Vence en</th>
-                        <th scope="col"><span class="sr-only">Acciones</span></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (b of boletas(); track b.id) {
-                        <tr data-testid="boleta-fila"
-                            [attr.data-boleta-id]="b.id"
-                            [attr.data-estado]="b.estado"
-                            [attr.data-fondos-liberados]="b.fondosLiberados ? 'true' : 'false'">
-                          <td>
-                            <span data-testid="boleta-estado">{{ textoEstado(b) }}</span>
-                          </td>
-                          <td>
-                            <span data-testid="boleta-monto" [attr.data-monto]="b.monto">$ {{ b.monto }}</span>
-                          </td>
-                          <td>
-                            <span data-testid="boleta-cuenta" [attr.data-cuenta-id]="b.cuentaOrigenId">{{ formatearCuenta(b.cuentaOrigenId) }} <span aria-hidden="true">{{ abreviar(b.cuentaOrigenId) }}</span><span class="sr-only">{{ b.cuentaOrigenId }}</span></span>
-                          </td>
-                          <td>
-                            <span data-testid="boleta-emitida-en" [attr.data-instante]="b.emitidaEn">{{ formatearFechaUtc(b.emitidaEn) }}</span>
-                          </td>
-                          <td>
-                            <span data-testid="boleta-vence-en" [attr.data-instante]="b.venceEn">{{ formatearFechaUtc(b.venceEn) }}</span>
-                          </td>
-                          <td class="celda-acciones">
-                            @if (b.estado === 'VIGENTE') {
-                              <button type="button" class="btn-devolver" data-testid="boleta-devolver"
-                                      [disabled]="accionEnCurso()"
-                                      (click)="devolverBoleta(b.id)">
-                                Devolver
-                              </button>
-                            }
-                            @if (b.estado === 'VENCIDA' && !b.fondosLiberados) {
-                              <button type="button" class="btn-liberar" data-testid="boleta-liberar"
-                                      [disabled]="accionEnCurso()"
-                                      (click)="liberarBoleta(b.id)">
-                                Liberar fondos
-                              </button>
-                            }
-                            <button type="button" class="btn-pdf" data-testid="boleta-comprobante-pdf"
-                                    (click)="descargarPdf('comprobante', b.id)">
-                              Comprobante
-                            </button>
-                            @if (b.fondosLiberados) {
-                              <button type="button" class="btn-pdf" data-testid="boleta-resumen-pdf"
-                                      (click)="descargarPdf('resumen', b.id)">
-                                Resumen
-                              </button>
-                            }
-                          </td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            }
-          </div>
-
-          <div id="boletas-panel-emitir"
-               class="boletas-panel"
-               data-testid="boletas-panel-emitir"
-               role="tabpanel"
-               aria-labelledby="boletas-pestana-emitir"
-               [hidden]="pestanaBoletas() !== 'emitir'">
-            @if (cuentas().length === 0) {
-              <div class="boletas-sin-cuentas" id="boletas-sin-cuentas" data-testid="boletas-sin-cuentas">
-                <p>Necesitas al menos una cuenta para emitir una boleta.</p>
-              </div>
-            } @else {
-              <form class="emitir-form" id="emitir-form" data-testid="emitir-form"
-                    [attr.data-estado]="estadoEmitir()"
-                    [attr.aria-busy]="estadoEmitir() === 'enviando' ? 'true' : 'false'"
-                    novalidate
-                    (submit)="$event.preventDefault()">
-                <h3 class="emitir-titulo">Emitir boleta de garantía</h3>
-
-                @if (emitirExito(); as ex) {
-                  <div class="emitir-exito" id="emitir-exito" data-testid="emitir-exito" role="status">
-                    <p>Boleta emitida exitosamente con ID: <span id="emitir-boleta-id" data-testid="emitir-boleta-id">{{ ex.id }}</span></p>
-                  </div>
-                }
-
-                @if (emitirError(); as err) {
-                  <div class="emitir-error" id="emitir-error" data-testid="emitir-error" role="alert" [attr.data-codigo]="err.codigo">
-                    <p>{{ textoError(err.codigo, err.mensaje) }}</p>
-                  </div>
-                }
-
-                @if (emitirSinRespuesta()) {
-                  <div class="emitir-sin-respuesta" id="emitir-sin-respuesta" data-testid="emitir-sin-respuesta" role="alert">
-                    <p>No recibimos respuesta del servidor. La emisión podría haberse procesado.</p>
-                    <button type="button" class="boton-secundario" id="emitir-reintentar" data-testid="emitir-reintentar"
-                            [disabled]="estadoEmitir() === 'enviando'"
-                            (click)="reintentarEmitir()">
-                      Reintentar
-                    </button>
-                  </div>
-                }
-
-                <div class="campo">
-                  <label for="emitir-origen">Cuenta de origen</label>
-                  <select id="emitir-origen" data-testid="emitir-origen"
-                          [disabled]="estadoEmitir() === 'enviando'"
-                          [value]="emitirOrigen()"
-                          (change)="emitirOrigen.set($any($event.target).value)"
-                          (input)="emitirOrigen.set($any($event.target).value)">
-                    @for (c of cuentas(); track c.id) {
-                    <option [value]="c.id" [selected]="c.id === emitirOrigen()"
-                            [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id + ' · $ ' + c.saldo">
-                      {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
-                    </option>
-                    }
-                  </select>
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-monto">Monto</label>
-                  <input type="text" id="emitir-monto" data-testid="emitir-monto"
-                         placeholder="250.10" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirMonto()"
-                         (input)="emitirMonto.set($any($event.target).value)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-plazo">Plazo (días)</label>
-                  <input type="text" id="emitir-plazo" data-testid="emitir-plazo"
-                         placeholder="30" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirPlazo()"
-                         (input)="emitirPlazo.set($any($event.target).value)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-beneficiario-rut">RUT del beneficiario</label>
-                  <input type="text" id="emitir-beneficiario-rut" data-testid="emitir-beneficiario-rut"
-                         placeholder="12345678-5" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirBeneficiarioRut()"
-                         (input)="emitirBeneficiarioRut.set($any($event.target).value)"
-                         (blur)="alSalirRutBeneficiario($event)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-beneficiario-nombre">Nombre del beneficiario</label>
-                  <input type="text" id="emitir-beneficiario-nombre" data-testid="emitir-beneficiario-nombre"
-                         placeholder="Constructora Andes SpA" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirBeneficiarioNombre()"
-                         (input)="emitirBeneficiarioNombre.set($any($event.target).value)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-retirador-rut">RUT del retirador</label>
-                  <input type="text" id="emitir-retirador-rut" data-testid="emitir-retirador-rut"
-                         placeholder="9876543-3" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirRetiradorRut()"
-                         (input)="emitirRetiradorRut.set($any($event.target).value)"
-                         (blur)="alSalirRutRetirador($event)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-retirador-nombre">Nombre del retirador</label>
-                  <input type="text" id="emitir-retirador-nombre" data-testid="emitir-retirador-nombre"
-                         placeholder="Ana Soto" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirRetiradorNombre()"
-                         (input)="emitirRetiradorNombre.set($any($event.target).value)">
-                </div>
-
-                <div class="campo">
-                  <label for="emitir-glosa">Glosa</label>
-                  <input type="text" id="emitir-glosa" data-testid="emitir-glosa"
-                         placeholder="Fiel cumplimiento contrato 123" autocomplete="off"
-                         [disabled]="estadoEmitir() === 'enviando'"
-                         [value]="emitirGlosa()"
-                         (input)="emitirGlosa.set($any($event.target).value)">
-                </div>
-
-                <div class="paso-acciones">
-                  <button type="button" class="boton-primario" id="emitir-enviar" data-testid="emitir-enviar"
-                          [disabled]="estadoEmitir() === 'enviando'"
-                          (click)="alEmitirBoleta()">
-                    @if (estadoEmitir() === 'enviando') {
-                      <span class="spinner-chico" aria-hidden="true"></span> Emitiendo…
-                    } @else {
-                      Emitir boleta
-                    }
-                  </button>
-                </div>
-              </form>
-            }
-          </div>
-        }
-      </section>
-    } @else if (vistaActual() === 'abrir-cuenta') {
-      <section class="abrir-cuenta-region" id="abrir-cuenta-region" data-testid="abrir-cuenta-region"
-               [attr.data-estado]="estadoAbrirCuenta()"
-               [attr.aria-busy]="estadoAbrirCuenta() === 'cargando' ? 'true' : 'false'"
-               aria-live="polite">
-
-        @if (estadoAbrirCuenta() === 'cargando') {
-          <div class="abrir-cuenta-cargando" id="abrir-cuenta-cargando" data-testid="abrir-cuenta-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Cargando cuentas...</span>
-          </div>
-        }
-
-        @if (estadoAbrirCuenta() === 'error') {
-          <div class="abrir-cuenta-error" id="abrir-cuenta-error" data-testid="abrir-cuenta-error" role="alert">
-            <p>{{ errorCargaAbrirCuenta()?.mensaje || 'Error al obtener la información de tus cuentas.' }}</p>
-            <button type="button" class="boton-reintentar" id="abrir-cuenta-reintentar" data-testid="abrir-cuenta-reintentar"
-                    (click)="cargarCuentasParaAbrir()">
-              Reintentar
-            </button>
-          </div>
-        }
-
-        @if (estadoAbrirCuenta() !== 'error') {
-          <form class="abrir-cuenta-form" id="abrir-cuenta-form" data-testid="abrir-cuenta-form"
-                novalidate
-                (submit)="alEnviarAbrirCuenta($event)">
-            <h2 class="abrir-cuenta-titulo">Abrir cuenta</h2>
-
-            @if (errorEnvioAbrirCuenta(); as err) {
-              <div class="abrir-cuenta-codigo-error" id="abrir-cuenta-codigo-error" data-testid="abrir-cuenta-codigo-error"
-                   role="alert" [attr.data-codigo]="err.codigo">
-                <p>{{ textoError(err.codigo, err.mensaje) }}</p>
-              </div>
-            }
-
-            <div class="campo">
-              <label for="abrir-cuenta-tipo">Tipo de cuenta</label>
-              <select id="abrir-cuenta-tipo" data-testid="abrir-cuenta-tipo"
-                      [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
-                      [value]="tipoAbrirCuenta()"
-                      (change)="tipoAbrirCuenta.set($any($event.target).value)">
-                <option value="CORRIENTE">Corriente</option>
-                <option value="AHORRO">Ahorro</option>
-              </select>
-            </div>
-
-            <div class="campo">
-              <label for="abrir-cuenta-monto">Monto</label>
-              <input type="text" id="abrir-cuenta-monto" data-testid="abrir-cuenta-monto"
-                     autocomplete="off"
-                     [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
-                     [value]="montoAbrirCuenta()"
-                     (input)="montoAbrirCuenta.set($any($event.target).value)">
-            </div>
-
-            @if (cuentas().length > 0) {
-              <div class="campo">
-                <label for="abrir-cuenta-origen">Cuenta de origen</label>
-                <select id="abrir-cuenta-origen" data-testid="abrir-cuenta-origen"
-                        [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
-                        [value]="origenAbrirCuenta()"
-                        (change)="origenAbrirCuenta.set($any($event.target).value)">
-                  <option value="">— elige una cuenta —</option>
-                  @for (c of cuentas(); track c.id) {
-                    <option [value]="c.id" [attr.data-tipo]="c.tipo"
-                            [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id + ' · $ ' + c.saldo">
-                      {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
-                    </option>
-                  }
-                </select>
-              </div>
-            }
-
-            <div class="paso-acciones">
-              <button type="submit" class="boton-primario" id="abrir-cuenta-enviar" data-testid="abrir-cuenta-enviar"
-                      [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()">
-                @if (enviandoAbrirCuenta()) {
-                  <span class="spinner-chico" aria-hidden="true"></span> Abriendo…
-                } @else {
-                  Abrir cuenta
-                }
-              </button>
-            </div>
-          </form>
-        }
-      </section>
-    } @else if (vistaActual() === 'movimientos') {
-      <section class="movimientos-region" id="movimientos-region" data-testid="movimientos-region"
-               [attr.data-estado]="estadoMovimientos()"
-               [attr.aria-busy]="estadoMovimientos() === 'cargando' ? 'true' : 'false'"
-               aria-live="polite">
-
-        @if (errorCuentasMovimientos()) {
-          <div class="movimientos-cuentas-error" id="movimientos-cuentas-error" data-testid="movimientos-cuentas-error" role="alert">
-            <p>Error al obtener la información de tus cuentas.</p>
-            <button type="button" class="boton-reintentar" id="movimientos-reintentar" data-testid="movimientos-reintentar"
-                    (click)="cargarCuentasParaMovimientos()">
-              Reintentar
-            </button>
-          </div>
-        }
-
-        <form class="movimientos-form" id="movimientos-form" data-testid="movimientos-form"
-              novalidate
-              (submit)="alBuscarMovimientos($event)">
-          <h2 class="movimientos-titulo">Movimientos</h2>
-
-          @if (estadoMovimientos() === 'error' && errorMovimientos(); as err) {
-            <div class="movimientos-error" id="movimientos-error" data-testid="movimientos-error"
-                 role="alert" [attr.data-codigo]="err.codigo">
-              <p class="movimientos-codigo-error" id="movimientos-codigo-error" data-testid="movimientos-codigo-error">{{ err.codigo }}</p>
-              <p class="movimientos-mensaje-error">{{ mensajeErrorMovimientos(err.codigo) }}</p>
-            </div>
-          }
-
-          <div class="movimientos-filtros-grid">
-            <div class="campo">
-              <label for="movimientos-cuenta">Cuenta</label>
-              <select id="movimientos-cuenta" data-testid="movimientos-cuenta"
-                      [value]="filtroCuentaId()"
-                      (change)="filtroCuentaId.set($any($event.target).value)"
-                      (input)="filtroCuentaId.set($any($event.target).value)">
-                <option value="">— elige una cuenta —</option>
-                @for (c of cuentas(); track c.id) {
-                  <option [value]="c.id"
-                          [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id">
-                    {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }}
-                  </option>
-                }
-              </select>
-            </div>
-
-            <div class="campo">
-              <label for="movimientos-transaccion">ID de transacción</label>
-              <input type="text" id="movimientos-transaccion" data-testid="movimientos-transaccion"
-                     placeholder="UUID de transacción"
-                     [value]="filtroTransaccionId()"
-                     (input)="filtroTransaccionId.set($any($event.target).value)"
-                     (change)="filtroTransaccionId.set($any($event.target).value)">
-            </div>
-
-            <div class="campo">
-              <label for="movimientos-desde">Desde</label>
-              <input type="text" id="movimientos-desde" data-testid="movimientos-desde"
-                     placeholder="AAAA-MM-DD"
-                     [value]="filtroDesde()"
-                     (input)="filtroDesde.set($any($event.target).value)"
-                     (change)="filtroDesde.set($any($event.target).value)">
-            </div>
-
-            <div class="campo">
-              <label for="movimientos-hasta">Hasta</label>
-              <input type="text" id="movimientos-hasta" data-testid="movimientos-hasta"
-                     placeholder="AAAA-MM-DD"
-                     [value]="filtroHasta()"
-                     (input)="filtroHasta.set($any($event.target).value)"
-                     (change)="filtroHasta.set($any($event.target).value)">
-            </div>
-
-            <div class="campo">
-              <label for="movimientos-monto">Monto</label>
-              <input type="text" id="movimientos-monto" data-testid="movimientos-monto"
-                     inputmode="decimal"
-                     placeholder="0.00"
-                     [value]="filtroMonto()"
-                     (input)="filtroMonto.set($any($event.target).value)"
-                     (change)="filtroMonto.set($any($event.target).value)">
-            </div>
-          </div>
-
-          <div class="paso-acciones">
-            <button type="submit" class="boton-primario" id="movimientos-buscar" data-testid="movimientos-buscar"
-                    [disabled]="estadoMovimientos() === 'cargando'">
-              @if (estadoMovimientos() === 'cargando') {
-                <span class="spinner-chico" aria-hidden="true"></span> Buscando…
-              } @else {
-                Buscar
-              }
-            </button>
-          </div>
-        </form>
-
-        @if (estadoMovimientos() === 'cargando') {
-          <div class="movimientos-cargando" id="movimientos-cargando" data-testid="movimientos-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Buscando movimientos…</span>
-          </div>
-        }
-
-        @if (estadoMovimientos() === 'vacio') {
-          <div class="movimientos-vacio" id="movimientos-vacio" data-testid="movimientos-vacio">
-            <p>No se encontraron movimientos para los filtros seleccionados.</p>
-          </div>
-        }
-
-        @if (estadoMovimientos() === 'listo') {
-          <div class="tabla-scroll">
-            <table class="movimientos-tabla" id="movimientos-tabla" data-testid="movimientos-tabla">
-              <caption>Movimientos de la cuenta</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Concepto</th>
-                  <th scope="col">Monto</th>
-                  <th scope="col">Tipo</th>
-                  <th scope="col">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (mov of movimientos(); track mov.id) {
-                  <tr class="movimiento-fila" data-testid="movimiento-fila"
-                      [attr.data-mov-id]="mov.id"
-                      [attr.data-transaccion-id]="mov.transaccionId">
-                    <td class="movimiento-concepto" data-testid="movimiento-concepto"
-                        [attr.data-concepto]="mov.concepto">{{ obtenerRotuloConcepto(mov.concepto) }}</td>
-                    <td class="movimiento-monto" data-testid="movimiento-monto"
-                        [attr.data-monto]="obtenerMontoAbsoluto(mov.monto)">{{ obtenerMontoAbsoluto(mov.monto) }}</td>
-                    <td class="movimiento-signo" data-testid="movimiento-signo"
-                        [attr.data-signo]="obtenerSigno(mov.monto)">{{ obtenerSigno(mov.monto) }}</td>
-                    <td class="movimiento-fecha" data-testid="movimiento-fecha"
-                        [attr.data-fecha]="mov.fecha">{{ formatearFechaUtc(mov.fecha) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-
-          @if (hayMasMovimientos()) {
-            <div class="movimientos-aviso-tope" id="movimientos-aviso-tope" data-testid="movimientos-aviso-tope" role="status">
-              <p>Se muestran los 50 más recientes; acota la búsqueda para ver el resto.</p>
-            </div>
-          }
-        }
-      </section>
-    } @else if (vistaActual() === 'pagos') {
-      <section class="pagos-region" id="pagos-region" data-testid="pagos-region">
-        @if (errorCuentasPagos()) {
-          <div class="pagos-cuentas-error" id="pagos-cuentas-error" data-testid="pagos-cuentas-error" role="alert">
-            <p>Error al obtener la información de tus cuentas.</p>
-            <button type="button" class="boton-reintentar" id="pagos-cuentas-reintentar" data-testid="pagos-cuentas-reintentar"
-                    (click)="cargarCuentasParaPagos()">
-              Reintentar
-            </button>
-          </div>
-        } @else if (cuentas().length === 0 && estadoCuentasPagos() === 'listo') {
-          <div class="pagos-sin-cuentas" id="pagos-sin-cuentas" data-testid="pagos-sin-cuentas">
-            <p>No tienes cuentas disponibles para realizar pagos.</p>
-          </div>
-        } @else if (cuentas().length > 0) {
-          <form class="pagos-form" id="pagos-form" data-testid="pagos-form"
-                novalidate
-                [attr.data-estado]="estadoPago()"
-                [attr.aria-busy]="estadoPago() === 'enviando' ? 'true' : 'false'"
-                (submit)="alEnviarPago($event)">
-            <h2 class="pagos-titulo">Pagos a terceros</h2>
-
-            @if (estadoPago() === 'error' && errorPago(); as err) {
-              <div class="pagos-error" id="pagos-error" data-testid="pagos-error"
-                   role="alert" [attr.data-codigo]="err.codigo">
-                <p class="pagos-codigo-error" id="pagos-codigo-error" data-testid="pagos-codigo-error">{{ err.codigo }}</p>
-                <p class="pagos-mensaje-error">{{ textoError(err.codigo, err.mensaje) }}</p>
-              </div>
-            }
-
-            @if (estadoPago() === 'sin-respuesta') {
-              <div class="pagos-sin-respuesta" id="pagos-sin-respuesta" data-testid="pagos-sin-respuesta">
-                <p>No se pudo conectar con el servidor.</p>
-                <button type="button" class="boton-reintentar" id="pagos-reintentar" data-testid="pagos-reintentar"
-                        (click)="reintentarPago()">
-                  Reintentar
-                </button>
-              </div>
-            }
-
-            @if (estadoPago() === 'exito') {
-              <div class="pagos-exito" id="pagos-exito" data-testid="pagos-exito" role="status">
-                <p>Pago realizado con éxito.</p>
-                <p>ID de pago: <span class="pagos-pago-id" id="pagos-pago-id" data-testid="pagos-pago-id">{{ pagoExitosoId() }}</span></p>
-                @if (pagoRepetido()) {
-                  <p class="pagos-repetido" id="pagos-repetido" data-testid="pagos-repetido">(Operación previamente procesada)</p>
-                }
-              </div>
-            }
-
-            <div class="pagos-grid">
-              <div class="campo">
-                <label for="pagos-origen">Cuenta de origen</label>
-                <select id="pagos-origen" data-testid="pagos-origen"
-                        [value]="pagoOrigen()"
-                        [disabled]="estadoPago() === 'enviando'"
-                        (change)="pagoOrigen.set($any($event.target).value)"
-                        (input)="pagoOrigen.set($any($event.target).value)">
-                  @for (c of cuentas(); track c.id) {
-                    <option [value]="c.id"
-                            [attr.aria-label]="(c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente') + ' ' + c.id">
-                      {{ c.tipo === 'AHORRO' ? 'Ahorro' : 'Corriente' }} {{ abreviar(c.id) }}
-                    </option>
-                  }
-                </select>
-              </div>
-
-              <div class="campo">
-                <label for="pagos-monto">Monto</label>
-                <input type="text" id="pagos-monto" data-testid="pagos-monto"
-                       inputmode="decimal"
-                       placeholder="0.00"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoMonto()"
-                       (input)="pagoMonto.set($any($event.target).value)"
-                       (change)="pagoMonto.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-nombre">Nombre del beneficiario</label>
-                <input type="text" id="pagos-beneficiario-nombre" data-testid="pagos-beneficiario-nombre"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioNombre()"
-                       (input)="pagoBeneficiarioNombre.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioNombre.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-direccion">Dirección</label>
-                <input type="text" id="pagos-beneficiario-direccion" data-testid="pagos-beneficiario-direccion"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioDireccion()"
-                       (input)="pagoBeneficiarioDireccion.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioDireccion.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-ciudad">Ciudad</label>
-                <input type="text" id="pagos-beneficiario-ciudad" data-testid="pagos-beneficiario-ciudad"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioCiudad()"
-                       (input)="pagoBeneficiarioCiudad.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioCiudad.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-estado">Estado / Región</label>
-                <input type="text" id="pagos-beneficiario-estado" data-testid="pagos-beneficiario-estado"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioEstado()"
-                       (input)="pagoBeneficiarioEstado.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioEstado.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-codigo-postal">Código postal</label>
-                <input type="text" id="pagos-beneficiario-codigo-postal" data-testid="pagos-beneficiario-codigo-postal"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioCodigoPostal()"
-                       (input)="pagoBeneficiarioCodigoPostal.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioCodigoPostal.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-beneficiario-telefono">Teléfono</label>
-                <input type="text" id="pagos-beneficiario-telefono" data-testid="pagos-beneficiario-telefono"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoBeneficiarioTelefono()"
-                       (input)="pagoBeneficiarioTelefono.set($any($event.target).value)"
-                       (change)="pagoBeneficiarioTelefono.set($any($event.target).value)">
-              </div>
-
-              <div class="campo">
-                <label for="pagos-cuenta-beneficiario">Cuenta del beneficiario</label>
-                <input type="text" id="pagos-cuenta-beneficiario" data-testid="pagos-cuenta-beneficiario"
-                       [disabled]="estadoPago() === 'enviando'"
-                       [value]="pagoCuentaBeneficiario()"
-                       (input)="pagoCuentaBeneficiario.set($any($event.target).value)"
-                       (change)="pagoCuentaBeneficiario.set($any($event.target).value)">
-              </div>
-            </div>
-
-            <div class="paso-acciones">
-              <button type="submit" class="boton-primario" id="pagos-enviar" #pagosEnviar data-testid="pagos-enviar"
-                      [disabled]="estadoPago() === 'enviando'"
-                      (click)="alEnviarPago($event)">
-                @if (estadoPago() === 'enviando') {
-                  <span class="pagos-enviando" id="pagos-enviando" data-testid="pagos-enviando">
-                    <span class="spinner-chico" aria-hidden="true"></span> Pagando…
-                  </span>
-                } @else {
-                  Pagar
-                }
-              </button>
-            </div>
-          </form>
-        }
-
-        <div class="pagos-lista" id="pagos-lista" data-testid="pagos-lista"
-             [attr.data-estado]="estadoListaPagos()"
-             [attr.aria-busy]="estadoListaPagos() === 'cargando' ? 'true' : 'false'">
-
-          @if (estadoListaPagos() === 'cargando') {
-            <div class="pagos-lista-cargando" id="pagos-lista-cargando" data-testid="pagos-lista-cargando">
+    @if (!emailUsuario()) {
+      <div class="mensaje">
+        <h1><span>{{ 'portada.lemaSinComisiones' | t }}</span> <span>{{ 'portada.lemaSinLetraChica' | t }}</span> <span>{{ 'portada.lemaNoSomosHumo' | t }}</span></h1>
+      </div>
+    } @else {
+      @if (vistaActual() === 'resumen') {
+        <section class="cuentas-region" id="cuentas-region" data-testid="cuentas-region"
+                 [attr.data-estado]="estadoCuentas()"
+                 [attr.aria-busy]="estadoCuentas() === 'cargando' ? 'true' : 'false'"
+                 aria-live="polite">
+          @if (estadoCuentas() === 'cargando') {
+            <div class="cuentas-cargando" data-testid="cuentas-cargando">
               <div class="spinner" aria-hidden="true"></div>
-              <span>Cargando pagos…</span>
+              <span>{{ 'cuentas.cargando' | t }}</span>
             </div>
           }
 
-          @if (estadoListaPagos() === 'error') {
-            <div class="pagos-lista-error" id="pagos-lista-error" data-testid="pagos-lista-error" role="alert">
-              <p>Error al cargar el historial de pagos.</p>
+          @if (estadoCuentas() === 'vacio') {
+            <div class="cuentas-vacio" data-testid="cuentas-vacio">
+              <p>{{ 'cuentas.vacio' | t }}</p>
+              <button type="button" class="boton-abrir-primera" id="abrir-primera-cuenta" data-testid="abrir-primera-cuenta"
+                      (click)="alActivarAbrirCuenta($event)">
+                {{ 'cuentas.abrirPrimera' | t }}
+              </button>
             </div>
           }
 
-          @if (estadoListaPagos() === 'vacio') {
-            <div class="pagos-vacio" id="pagos-vacio" data-testid="pagos-vacio">
-              <p>No tienes pagos registrados.</p>
+          @if (estadoCuentas() === 'error') {
+            <div class="cuentas-error" data-testid="cuentas-error"
+                 [attr.data-codigo]="errorCuentas()?.codigo ?? null"
+                 [attr.data-motivo]="errorCuentas()?.motivo ?? null">
+              <p>{{ textoErrorCuentas(errorCuentas()) }}</p>
+              <button type="button" class="boton-reintentar" data-testid="cuentas-reintentar" (click)="cargarCuentas()">
+                {{ 'comun.reintentar' | t }}
+              </button>
             </div>
           }
 
-          @if (estadoListaPagos() === 'listo') {
-            <div class="tabla-scroll">
-              <table class="pagos-tabla" id="pagos-tabla" data-testid="pagos-tabla">
-                <caption>Historial de pagos</caption>
+          @if (estadoCuentas() === 'listo') {
+            <div class="cuentas-contenedor">
+              <div class="cuentas-encabezado">
+                <h2 class="cuentas-titulo">{{ 'cuentas.resumenRegion' | t }}</h2>
+              </div>
+              <table class="cuentas-tabla" data-testid="cuentas-tabla">
+                <caption class="sr-only">{{ 'cuentas.resumenTabla' | t }}</caption>
                 <thead>
                   <tr>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Cuenta origen</th>
-                    <th scope="col">Beneficiario</th>
-                    <th scope="col">Cuenta beneficiario</th>
-                    <th scope="col">Monto</th>
+                    <th scope="col">{{ 'cuentas.colIdentificador' | t }}</th>
+                    <th scope="col">{{ 'cuentas.colTipo' | t }}</th>
+                    <th scope="col">{{ 'cuentas.colSaldo' | t }}</th>
+                    <th scope="col"><span class="sr-only">{{ 'cuentas.colAcciones' | t }}</span></th>
                   </tr>
                 </thead>
                 <tbody>
-                  @for (p of pagos(); track p.id) {
-                    <tr class="pago-fila" data-testid="pago-fila"
-                        [attr.data-pago-id]="p.id"
-                        [attr.data-transaccion-id]="p.transaccionId">
-                      <td class="pago-fecha" data-testid="pago-fecha"
-                          [attr.data-fecha]="p.pagadoEn">{{ formatearFechaUtc(p.pagadoEn) }}</td>
-                      <td class="pago-origen" data-testid="pago-origen"
-                          [attr.data-cuenta-id]="p.cuentaOrigenId"><span aria-hidden="true">{{ abreviar(p.cuentaOrigenId) }}</span><span class="sr-only">{{ p.cuentaOrigenId }}</span></td>
-                      <td class="pago-beneficiario" data-testid="pago-beneficiario">{{ p.beneficiarioNombre }}</td>
-                      <td class="pago-cuenta-beneficiario" data-testid="pago-cuenta-beneficiario">{{ p.cuentaBeneficiario }}</td>
-                      <td class="pago-monto" data-testid="pago-monto"
-                          [attr.data-monto]="p.monto">$ {{ p.monto }}</td>
+                  @for (cuenta of cuentas(); track cuenta.id) {
+                    <tr data-testid="cuenta-fila" [attr.data-cuenta-id]="cuenta.id">
+                      <td class="celda-id">
+                        <span data-testid="cuenta-id" [attr.data-cuenta-id]="cuenta.id"><span aria-hidden="true">{{ abreviar(cuenta.id) }}</span><span class="sr-only">{{ cuenta.id }}</span></span>
+                      </td>
+                      <td class="celda-tipo">
+                        <span data-testid="cuenta-tipo" [attr.data-tipo]="cuenta.tipo">{{ textoTipoCuenta(cuenta.tipo) }}</span>
+                      </td>
+                      <td class="celda-saldo">
+                        <span data-testid="cuenta-saldo" [attr.data-monto]="cuenta.saldo">$ {{ cuenta.saldo }}</span>
+                      </td>
+                      <td class="celda-acciones">
+                        <button type="button" class="boton-copiar" data-testid="cuenta-copiar-id"
+                                [attr.aria-label]="'cuentas.copiarAria' | t:{ id: cuenta.id }"
+                                (click)="copiarId(cuenta.id)">
+                          {{ 'cuentas.copiar' | t }}
+                        </button>
+                      </td>
                     </tr>
                   }
                 </tbody>
               </table>
             </div>
           }
-        </div>
-      </section>
-
-      <zfb-dialogo
-        #dialogoConfirmarPagos
-        tipo="confirmar"
-        [abierto]="modalConfirmacionPagosAbierto()"
-        [monto]="pagoMonto()"
-        (alAceptar)="confirmarPago()"
-        (alCancelar)="cancelarPago()"
-      ></zfb-dialogo>
-    } @else if (vistaActual() === 'contacto') {
-      <section class="contacto-region" id="contacto-region" data-testid="contacto-region"
-               [attr.data-estado]="estadoContacto()"
-               [attr.aria-busy]="estadoContacto() === 'cargando' ? 'true' : null">
-
-        @if (estadoContacto() === 'cargando') {
-          <div class="contacto-cargando" id="contacto-cargando" data-testid="contacto-cargando">
-            <div class="spinner" aria-hidden="true"></div>
-            <span>Cargando datos de contacto…</span>
-          </div>
-        } @else if (estadoContacto() === 'error') {
-          <div class="contacto-carga-error" id="contacto-carga-error" data-testid="contacto-carga-error" role="alert">
-            <p>Error al cargar los datos de contacto.</p>
-            <button type="button" class="boton-reintentar" id="contacto-carga-reintentar" data-testid="contacto-carga-reintentar"
-                    (click)="cargarContacto()">
-              Reintentar
-            </button>
-          </div>
-        } @else if (estadoContacto() === 'listo') {
-          <div class="contacto-aviso" id="contacto-aviso" data-testid="contacto-aviso" role="status" aria-live="polite">
-            @if (avisoContactoGuardado()) {
-              <div class="contacto-guardado" id="contacto-guardado" data-testid="contacto-guardado">
-                <p>Datos de contacto guardados correctamente.</p>
-              </div>
-            }
-          </div>
-
-          <div class="contacto-email-contenedor">
-            <div class="campo">
-              <label for="contacto-email">Correo electrónico</label>
-              <input type="text" id="contacto-email" data-testid="contacto-email"
-                     readonly
-                     [value]="contactoEmail()">
+        </section>
+      } @else if (vistaActual() === 'transferir') {
+        <section class="transferir-region" id="transferir-region" aria-live="polite">
+          @if (estadoCuentas() === 'cargando') {
+            <div class="cuentas-cargando" data-testid="cuentas-cargando">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>{{ 'cuentas.cargando' | t }}</span>
             </div>
-          </div>
+          }
 
-          <form class="contacto-form" id="contacto-form" data-testid="contacto-form"
+          @if (estadoCuentas() === 'vacio') {
+            <div class="transferir-sin-cuentas" data-testid="transferir-sin-cuentas">
+              <p>{{ 'transferir.sinCuentas' | t }}</p>
+            </div>
+          }
+
+          @if (estadoCuentas() === 'error') {
+            <div class="cuentas-error" data-testid="cuentas-error"
+                 [attr.data-codigo]="errorCuentas()?.codigo ?? null"
+                 [attr.data-motivo]="errorCuentas()?.motivo ?? null">
+              <p>{{ textoErrorCuentas(errorCuentas()) }}</p>
+              <button type="button" class="boton-reintentar" data-testid="cuentas-reintentar" (click)="cargarCuentas()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          }
+
+          @if (estadoCuentas() === 'listo') {
+            @if (transferenciaExitosa(); as exito) {
+              <section class="transferir-exito" id="transferir-exito" data-testid="transferir-exito" role="status" aria-labelledby="exito-titulo">
+                <div class="exito-cabeza">
+                  <h2 id="exito-titulo">{{ 'transferir.exitoTitulo' | t }}</h2>
+                  <p class="exito-monto">$ {{ exito.monto }}</p>
+                  @if (exito.repetida) {
+                    <span class="chip-repetida" data-testid="transferir-repetida">{{ 'transferir.respuestaRepetida' | t }}</span>
+                  }
+                </div>
+
+                <dl class="exito-detalles">
+                  <dt>{{ 'transferir.origen' | t }}</dt>
+                  <dd [attr.data-cuenta-id]="exito.origenId"><span aria-hidden="true">{{ abreviar(exito.origenId) }}</span><span class="sr-only">{{ exito.origenId }}</span></dd>
+                  <dt>{{ 'transferir.destino' | t }}</dt>
+                  <dd [attr.data-cuenta-id]="exito.destinoId"><span aria-hidden="true">{{ abreviar(exito.destinoId) }}</span><span class="sr-only">{{ exito.destinoId }}</span></dd>
+                  <dt>{{ 'transferir.numOperacion' | t }}</dt>
+                  <dd data-testid="transferir-transaccion-id">{{ exito.transaccionId }}</dd>
+                </dl>
+
+                @if (errorPdf()) {
+                  <p class="aviso-error-pdf" role="alert">{{ textoErrorPdfTransferir(errorPdf()) }}</p>
+                }
+
+                <div class="exito-acciones">
+                  <button type="button" class="btn-comprobante" data-testid="transferir-comprobante-pdf" (click)="descargarComprobantePdf(exito.transaccionId)">
+                    {{ 'transferir.descargarPdf' | t }}
+                  </button>
+                  <button type="button" class="btn-nueva" data-testid="transferir-nueva" (click)="nuevaTransferencia()">
+                    {{ 'transferir.nuevaTransferencia' | t }}
+                  </button>
+                  <a href="#resumen" class="link-volver-cuentas" (click)="alActivarResumen($event)">
+                    {{ 'comun.verCuentas' | t }}
+                  </a>
+                </div>
+              </section>
+            } @else if (transferenciaOtroBancoExitosa(); as exitoBanco) {
+              <section class="transferir-exito" id="transferir-exito-banco" role="status" aria-labelledby="exito-banco-titulo">
+                <div class="exito-cabeza">
+                  <h2 id="exito-banco-titulo">{{ 'transferir.exitoTitulo' | t }}</h2>
+                  <p class="exito-monto"
+                     id="transferir-banco-monto"
+                     data-testid="transferir-banco-monto"
+                     [attr.data-monto]="exitoBanco.monto">
+                    $ {{ exitoBanco.monto }}
+                  </p>
+                </div>
+
+                <dl class="exito-detalles">
+                  <dt>{{ 'transferir.origen' | t }}</dt>
+                  <dd class="mono" [attr.data-cuenta-id]="exitoBanco.cuentaOrigenId"><span aria-hidden="true">{{ abreviar(exitoBanco.cuentaOrigenId) }}</span><span class="sr-only">{{ exitoBanco.cuentaOrigenId }}</span></dd>
+                  <dt>{{ 'transferir.bancoDestino' | t }}</dt>
+                  <dd id="transferir-banco-nombre"
+                      data-testid="transferir-banco-nombre"
+                      [attr.data-banco]="exitoBanco.banco">
+                    {{ nombreBanco(exitoBanco.banco) }}
+                  </dd>
+                  <dt>{{ 'transferir.numCuenta' | t }}</dt>
+                  <dd class="mono"
+                      id="transferir-banco-numero"
+                      data-testid="transferir-banco-numero"
+                      [attr.data-numero]="exitoBanco.numeroCuenta">
+                    {{ exitoBanco.numeroCuenta }}
+                  </dd>
+                  <dt>{{ 'transferir.tipoCuenta' | t }}</dt>
+                  <dd id="transferir-banco-tipo"
+                      data-testid="transferir-banco-tipo"
+                      [attr.data-tipo]="exitoBanco.tipoCuenta">
+                    {{ textoTipoCuenta(exitoBanco.tipoCuenta) }}
+                  </dd>
+                  <dt>{{ 'comun.fecha' | t }}</dt>
+                  <dd id="transferir-banco-fecha"
+                      data-testid="transferir-banco-fecha"
+                      [attr.data-realizada-en]="exitoBanco.realizadaEn">
+                    {{ formatearFechaUtc(exitoBanco.realizadaEn) }}
+                  </dd>
+                  <dt>{{ 'transferir.numOperacion' | t }}</dt>
+                  <dd class="mono">{{ exitoBanco.transaccionId }}</dd>
+                </dl>
+
+                <div class="exito-acciones">
+                  <button type="button" class="btn-nueva" data-testid="transferir-nueva" (click)="nuevaTransferencia()">
+                    {{ 'transferir.nuevaTransferencia' | t }}
+                  </button>
+                  <a href="#resumen" class="link-volver-cuentas" (click)="alActivarResumen($event)">
+                    {{ 'comun.verCuentas' | t }}
+                  </a>
+                </div>
+              </section>
+            } @else {
+              <form class="transferir-form" id="transferir-form" data-testid="transferir-form"
+                    novalidate
+                    [attr.data-estado]="estadoTransferencia()"
+                    [attr.aria-busy]="estadoTransferencia() === 'enviando' ? 'true' : 'false'"
+                    (submit)="$event.preventDefault()">
+                <h2 class="transferir-titulo">{{ 'transferir.titulo' | t }}</h2>
+
+                <div class="transferir-pasos" id="transferir-pasos" data-testid="transferir-pasos" role="tablist" [attr.aria-label]="'transferir.pasosAria' | t">
+                  <button type="button"
+                          class="paso-tab"
+                          id="paso-tab-origen"
+                          #tabOrigen
+                          data-testid="transferir-paso-origen"
+                          role="tab"
+                          [attr.aria-selected]="pasoActual() === 'origen' ? 'true' : 'false'"
+                          aria-controls="panel-origen"
+                          [attr.tabindex]="pasoActual() === 'origen' ? 0 : -1"
+                          (click)="alHacerClicPaso('origen')"
+                          (keydown)="alPulsarTeclaTab($event)">
+                    {{ 'transferir.pasoOrigen' | t }}
+                  </button>
+                  <button type="button"
+                          class="paso-tab"
+                          id="paso-tab-destino"
+                          #tabDestino
+                          data-testid="transferir-paso-destino"
+                          role="tab"
+                          [attr.aria-selected]="pasoActual() === 'destino' ? 'true' : 'false'"
+                          aria-controls="panel-destino"
+                          [attr.tabindex]="pasoActual() === 'destino' ? 0 : -1"
+                          (click)="alHacerClicPaso('destino')"
+                          (keydown)="alPulsarTeclaTab($event)">
+                    {{ 'transferir.pasoDestino' | t }}
+                  </button>
+                  <button type="button"
+                          class="paso-tab"
+                          id="paso-tab-revisar"
+                          #tabRevisar
+                          data-testid="transferir-paso-revisar"
+                          role="tab"
+                          [attr.aria-selected]="pasoActual() === 'revisar' ? 'true' : 'false'"
+                          [attr.aria-disabled]="revisarHabilitado() ? 'false' : 'true'"
+                          aria-controls="panel-revisar"
+                          [attr.tabindex]="pasoActual() === 'revisar' ? 0 : -1"
+                          (click)="alHacerClicPaso('revisar')"
+                          (keydown)="alPulsarTeclaTab($event)">
+                    {{ 'transferir.pasoRevisar' | t }}
+                  </button>
+                </div>
+
+                <div id="panel-origen" role="tabpanel" aria-labelledby="paso-tab-origen" [hidden]="pasoActual() !== 'origen'" class="paso-panel">
+                  <div class="campo">
+                    <label for="transferir-origen">{{ 'transferir.origen' | t }}</label>
+                    <select id="transferir-origen"
+                            data-testid="transferir-origen"
+                            [disabled]="estadoTransferencia() === 'enviando'"
+                            [value]="origenSeleccionado()"
+                            (change)="alCambiarOrigen($any($event.target).value)">
+                      @for (c of cuentas(); track c.id) {
+                        <option [value]="c.id" [attr.data-tipo]="c.tipo" [selected]="c.id === origenSeleccionado()"
+                                [attr.aria-label]="textoAriaCuenta(c.tipo, c.id, c.saldo)">
+                          {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+                  <div class="paso-acciones">
+                    <button type="button"
+                            class="boton-primario"
+                            id="transferir-origen-siguiente"
+                            data-testid="transferir-origen-siguiente"
+                            [disabled]="estadoTransferencia() === 'enviando'"
+                            (click)="irAPaso('destino')">
+                      {{ 'comun.siguiente' | t }}
+                    </button>
+                  </div>
+                </div>
+
+                <div id="panel-destino" role="tabpanel" aria-labelledby="paso-tab-destino" [hidden]="pasoActual() !== 'destino'" class="paso-panel">
+                  <fieldset class="campo">
+                    <legend>{{ 'transferir.destino' | t }}</legend>
+                    <div class="opciones-modo">
+                      <label class="opcion-radio">
+                        <input type="radio"
+                               name="modoDestino"
+                               id="modo-propia"
+                               value="propia"
+                               data-testid="transferir-destino-modo-propia"
+                               [checked]="modoDestino() === 'propia'"
+                               [disabled]="estadoTransferencia() === 'enviando'"
+                               (change)="modoDestino.set('propia')">
+                        {{ 'transferir.pestanaMisCuentas' | t }}
+                      </label>
+                      <label class="opcion-radio">
+                        <input type="radio"
+                               name="modoDestino"
+                               id="modo-otra"
+                               value="otra"
+                               data-testid="transferir-destino-modo-otra"
+                               [checked]="modoDestino() === 'otra'"
+                               [disabled]="estadoTransferencia() === 'enviando'"
+                               (change)="modoDestino.set('otra')">
+                        {{ 'transferir.pestanaOtrasCuentas' | t }}
+                      </label>
+                      <label class="opcion-radio">
+                        <input type="radio"
+                               name="modoDestino"
+                               id="modo-banco"
+                               value="banco"
+                               data-testid="transferir-destino-modo-banco"
+                               [checked]="modoDestino() === 'banco'"
+                               [disabled]="estadoTransferencia() === 'enviando'"
+                               (change)="modoDestino.set('banco')">
+                        {{ 'transferir.pestanaOtroBanco' | t }}
+                      </label>
+                    </div>
+
+                    @if (modoDestino() === 'propia') {
+                      <div class="campo-sub">
+                        <label for="transferir-destino-propia" class="sr-only">{{ 'transferir.cuentaPropiaDestino' | t }}</label>
+                        @if (cuentasDestinoPropias().length > 0) {
+                          <select id="transferir-destino-propia"
+                                  data-testid="transferir-destino-propia"
+                                  [disabled]="estadoTransferencia() === 'enviando'"
+                                  [value]="destinoPropia()"
+                                  (change)="destinoPropia.set($any($event.target).value)">
+                            @for (c of cuentasDestinoPropias(); track c.id) {
+                              <option [value]="c.id" [attr.data-tipo]="c.tipo" [selected]="c.id === destinoPropia()"
+                                      [attr.aria-label]="textoAriaCuenta(c.tipo, c.id, c.saldo)">
+                                {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
+                              </option>
+                            }
+                          </select>
+                        } @else {
+                          <p class="ayuda">{{ 'transferir.sinOtraCuentaPropia' | t }}</p>
+                        }
+                      </div>
+                    } @else if (modoDestino() === 'otra') {
+                      <div class="campo-sub">
+                        <label for="transferir-destino-id" class="sr-only">{{ 'transferir.idCuentaDestino' | t }}</label>
+                        <input type="text"
+                               id="transferir-destino-id"
+                               class="input-mono"
+                               data-testid="transferir-destino-id"
+                               autocomplete="off"
+                               spellcheck="false"
+                               [placeholder]="'transferir.placeholderDestinoId' | t"
+                               [disabled]="estadoTransferencia() === 'enviando'"
+                               [value]="destinoOtra()"
+                               (input)="destinoOtra.set($any($event.target).value)">
+                      </div>
+                    } @else if (modoDestino() === 'banco') {
+                      <div class="campo-sub">
+                        <div class="campo">
+                          <label for="transferir-destino-banco">{{ 'transferir.banco' | t }}</label>
+                          <select id="transferir-destino-banco"
+                                  data-testid="transferir-destino-banco"
+                                  [disabled]="estadoTransferencia() === 'enviando'"
+                                  [value]="destinoBanco()"
+                                  (change)="destinoBanco.set($any($event.target).value)">
+                            <option value="ASERCION">{{ 'banco.ASERCION' | t }}</option>
+                            <option value="FIXTURE">{{ 'banco.FIXTURE' | t }}</option>
+                            <option value="STUB">{{ 'banco.STUB' | t }}</option>
+                            <option value="SANDBOX">{{ 'banco.SANDBOX' | t }}</option>
+                            <option value="MOCK">{{ 'banco.MOCK' | t }}</option>
+                          </select>
+                        </div>
+
+                        <div class="campo">
+                          <label for="transferir-destino-numero">{{ 'transferir.numCuenta' | t }}</label>
+                          <input type="text"
+                                 id="transferir-destino-numero"
+                                 class="input-mono"
+                                 data-testid="transferir-destino-numero"
+                                 autocomplete="off"
+                                 spellcheck="false"
+                                 [placeholder]="'transferir.placeholderDestinoNumero' | t"
+                                 [disabled]="estadoTransferencia() === 'enviando'"
+                                 [value]="destinoNumero()"
+                                 (input)="destinoNumero.set($any($event.target).value)">
+                        </div>
+
+                        <div class="campo">
+                          <label for="transferir-destino-tipo">{{ 'transferir.tipoCuenta' | t }}</label>
+                          <select id="transferir-destino-tipo"
+                                  data-testid="transferir-destino-tipo"
+                                  [disabled]="estadoTransferencia() === 'enviando'"
+                                  [value]="destinoTipo()"
+                                  (change)="destinoTipo.set($any($event.target).value)">
+                            <option value="CORRIENTE">{{ 'cuenta.tipo.corriente' | t }}</option>
+                            <option value="AHORRO">{{ 'cuenta.tipo.ahorro' | t }}</option>
+                          </select>
+                        </div>
+
+                        <p class="ayuda"
+                           id="transferir-banco-tope"
+                           data-testid="transferir-banco-tope">
+                          {{ 'transferir.topeDiarioAviso' | t }}
+                        </p>
+                      </div>
+                    }
+                  </fieldset>
+
+                  <div class="campo">
+                    <label for="transferir-monto">{{ 'comun.monto' | t }}</label>
+                    <div class="con-prefijo">
+                      <span aria-hidden="true">$</span>
+                      <input type="text"
+                             id="transferir-monto"
+                             data-testid="transferir-monto"
+                             inputmode="decimal"
+                             autocomplete="off"
+                             [placeholder]="'transferir.placeholderMonto' | t"
+                             [disabled]="estadoTransferencia() === 'enviando'"
+                             [value]="monto()"
+                             (input)="monto.set($any($event.target).value)">
+                    </div>
+                  </div>
+
+                  <div class="paso-acciones">
+                    <button type="button"
+                            class="boton-secundario"
+                            id="transferir-destino-volver"
+                            data-testid="transferir-destino-volver"
+                            [disabled]="estadoTransferencia() === 'enviando'"
+                            (click)="irAPaso('origen')">
+                      {{ 'comun.volver' | t }}
+                    </button>
+                    <button type="button"
+                            class="boton-primario"
+                            id="transferir-destino-siguiente"
+                            data-testid="transferir-destino-siguiente"
+                            [attr.aria-disabled]="revisarHabilitado() ? 'false' : 'true'"
+                            (click)="alHacerClicDestinoSiguiente()">
+                      {{ 'comun.siguiente' | t }}
+                    </button>
+                  </div>
+                </div>
+
+                <div id="panel-revisar" role="tabpanel" aria-labelledby="paso-tab-revisar" [hidden]="pasoActual() !== 'revisar'" class="paso-panel">
+                  <div class="revisar-resumen">
+                    <dl class="revisar-datos">
+                      <dt>{{ 'transferir.origen' | t }}</dt>
+                      <dd class="mono" [attr.data-cuenta-id]="origenSeleccionado()"><span aria-hidden="true">{{ abreviar(origenSeleccionado()) }}</span><span class="sr-only">{{ origenSeleccionado() }}</span></dd>
+                      @if (modoDestino() === 'banco') {
+                        <dt>{{ 'transferir.bancoDestino' | t }}</dt>
+                        <dd>
+                          <span id="transferir-revisar-banco"
+                                data-testid="transferir-revisar-banco"
+                                [attr.data-banco]="destinoBanco()">
+                            {{ nombreBanco(destinoBanco()) }}
+                          </span>
+                        </dd>
+                        <dt>{{ 'transferir.numCuenta' | t }}</dt>
+                        <dd class="mono">
+                          <span id="transferir-revisar-numero"
+                                data-testid="transferir-revisar-numero"
+                                [attr.data-numero]="destinoNumero()">
+                            {{ destinoNumero() }}
+                          </span>
+                        </dd>
+                        <dt>{{ 'transferir.tipoCuenta' | t }}</dt>
+                        <dd>
+                          <span id="transferir-revisar-tipo"
+                                data-testid="transferir-revisar-tipo"
+                                [attr.data-tipo]="destinoTipo()">
+                            {{ textoTipoCuenta(destinoTipo()) }}
+                          </span>
+                        </dd>
+                      } @else if (modoDestino() === 'propia') {
+                        <dt>{{ 'transferir.destino' | t }}</dt>
+                        <dd class="mono" [attr.data-cuenta-id]="destinoPropia().trim()"><span aria-hidden="true">{{ abreviar(destinoPropia().trim()) }}</span><span class="sr-only">{{ destinoPropia().trim() }}</span></dd>
+                      } @else {
+                        <dt>{{ 'transferir.destino' | t }}</dt>
+                        <dd class="mono">{{ destinoFinal() }}</dd>
+                      }
+                      <dt>{{ 'comun.monto' | t }}</dt>
+                      <dd>
+                        <span id="transferir-revisar-monto"
+                              data-testid="transferir-revisar-monto"
+                              [attr.data-monto]="monto().trim()">
+                          $ {{ monto().trim() }}
+                        </span>
+                      </dd>
+                    </dl>
+                  </div>
+
+                  @if (errorTransferencia(); as err) {
+                    <div class="transferir-error"
+                         id="transferir-error"
+                         data-testid="transferir-error"
+                         role="alert"
+                         [attr.data-codigo]="err.codigo ?? null">
+                      <p>{{ textoError(err.codigo, err.mensaje) }}</p>
+                    </div>
+                  }
+
+                  @if (sinRespuesta()) {
+                    <div class="transferir-sin-respuesta"
+                         id="transferir-sin-respuesta"
+                         data-testid="transferir-sin-respuesta"
+                         role="alert">
+                      <p>{{ 'transferir.sinRespuesta' | t }}</p>
+                      <button type="button"
+                              class="boton-secundario"
+                              id="transferir-reintentar"
+                              data-testid="transferir-reintentar"
+                              [disabled]="estadoTransferencia() === 'enviando'"
+                              (click)="reintentarTransferencia()">
+                        {{ 'comun.reintentar' | t }}
+                      </button>
+                    </div>
+                  }
+
+                  <div class="paso-acciones">
+                    <button type="button"
+                            class="boton-secundario"
+                            id="transferir-revisar-volver"
+                            data-testid="transferir-revisar-volver"
+                            [disabled]="estadoTransferencia() === 'enviando'"
+                            (click)="irAPaso('destino')">
+                      {{ 'comun.volver' | t }}
+                    </button>
+                    <button type="button"
+                            class="boton-primario"
+                            id="transferir-enviar"
+                            #transferirEnviar
+                            data-testid="transferir-enviar"
+                            [disabled]="estadoTransferencia() === 'enviando'"
+                            [attr.aria-disabled]="estadoTransferencia() === 'enviando' ? 'true' : 'false'"
+                            (click)="abrirModalConfirmacion()">
+                      @if (estadoTransferencia() === 'enviando') {
+                        <span class="spinner-chico" aria-hidden="true"></span> {{ 'transferir.transfiriendo' | t }}
+                      } @else {
+                        {{ 'transferir.transferir' | t }}
+                      }
+                    </button>
+                  </div>
+                </div>
+              </form>
+            }
+          }
+        </section>
+
+        <zfb-dialogo
+          #dialogoConfirmar
+          tipo="confirmar"
+          [abierto]="modalConfirmacionAbierto()"
+          [monto]="monto().trim()"
+          (alAceptar)="confirmarTransferencia()"
+          (alCancelar)="cancelarTransferencia()"
+        ></zfb-dialogo>
+      } @else if (vistaActual() === 'boletas') {
+        <section class="boletas-region" id="boletas-region" data-testid="boletas-region"
+                 [attr.data-estado]="estadoBoletas()"
+                 [attr.aria-busy]="estadoBoletas() === 'cargando' ? 'true' : 'false'"
+                 aria-live="polite">
+
+          @if (estadoBoletas() === 'cargando') {
+            <div class="boletas-cargando" id="boletas-cargando" data-testid="boletas-cargando">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>{{ 'boletas.cargando' | t }}</span>
+            </div>
+          }
+
+          @if (estadoBoletas() === 'error') {
+            <div class="boletas-error" id="boletas-error" data-testid="boletas-error" role="alert">
+              <p>{{ 'boletas.error' | t }}</p>
+              <button type="button" class="boton-reintentar" id="boletas-reintentar" data-testid="boletas-reintentar" (click)="cargarBoletasYcuentas()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          }
+
+          @if (accionError(); as err) {
+            <div class="boletas-accion-error" id="boletas-accion-error" data-testid="boletas-accion-error" role="alert"
+                 [attr.data-codigo]="err.codigo" [attr.data-boleta-id]="err.boletaId">
+              <p>{{ textoError(err.codigo, err.mensaje) }}</p>
+            </div>
+          }
+
+          @if (accionSinRespuesta()) {
+            <div class="boletas-accion-sin-respuesta" id="boletas-accion-sin-respuesta" data-testid="boletas-accion-sin-respuesta" role="alert">
+              <p>{{ 'boletas.sinRespuestaAccion' | t }}</p>
+            </div>
+          }
+
+          @if (errorPdfBoletas(); as errPdf) {
+            <div class="boletas-error-pdf" role="alert">
+              <p>{{ textoErrorPdfBoletas(errPdf) }}</p>
+            </div>
+          }
+
+          @if (estadoBoletas() === 'listo' || estadoBoletas() === 'vacio') {
+            <div class="boletas-pasos" role="tablist" [attr.aria-label]="'boletas.regionAria' | t">
+              <button type="button"
+                      class="paso-tab"
+                      id="boletas-pestana-lista"
+                      #pestanaBoletasLista
+                      data-testid="boletas-pestana-lista"
+                      role="tab"
+                      [attr.aria-selected]="pestanaBoletas() === 'lista' ? 'true' : 'false'"
+                      aria-controls="boletas-panel-lista"
+                      [attr.tabindex]="pestanaBoletas() === 'lista' ? 0 : -1"
+                      (click)="alSeleccionarPestanaBoletas('lista')"
+                      (keydown)="alPulsarTeclaPestanaBoletas($event)">
+                {{ 'boletas.pestanaLista' | t }}
+              </button>
+              <button type="button"
+                      class="paso-tab"
+                      id="boletas-pestana-emitir"
+                      #pestanaBoletasEmitir
+                      data-testid="boletas-pestana-emitir"
+                      role="tab"
+                      [attr.aria-selected]="pestanaBoletas() === 'emitir' ? 'true' : 'false'"
+                      aria-controls="boletas-panel-emitir"
+                      [attr.tabindex]="pestanaBoletas() === 'emitir' ? 0 : -1"
+                      (click)="alSeleccionarPestanaBoletas('emitir')"
+                      (keydown)="alPulsarTeclaPestanaBoletas($event)">
+                {{ 'boletas.pestanaEmitir' | t }}
+              </button>
+            </div>
+
+            <div id="boletas-panel-lista"
+                 class="boletas-panel"
+                 data-testid="boletas-panel-lista"
+                 role="tabpanel"
+                 aria-labelledby="boletas-pestana-lista"
+                 [hidden]="pestanaBoletas() !== 'lista'">
+              @if (estadoBoletas() === 'vacio') {
+                <div class="boletas-vacio" id="boletas-vacio" data-testid="boletas-vacio">
+                  <p>{{ 'boletas.vacio' | t }}</p>
+                </div>
+              }
+
+              @if (estadoBoletas() === 'listo') {
+                <div class="boletas-contenedor">
+                  <div class="boletas-encabezado">
+                    <h2 class="boletas-titulo">{{ 'boletas.panelTitulo' | t }}</h2>
+                  </div>
+                  <div class="tabla-scroll">
+                    <table class="boletas-tabla" data-testid="boletas-tabla">
+                      <caption class="sr-only">{{ 'boletas.tablaTitulo' | t }}</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">{{ 'boletas.colEstado' | t }}</th>
+                          <th scope="col">{{ 'boletas.colMonto' | t }}</th>
+                          <th scope="col">{{ 'boletas.colCuentaOrigen' | t }}</th>
+                          <th scope="col">{{ 'boletas.colEmitidaEn' | t }}</th>
+                          <th scope="col">{{ 'boletas.colVenceEn' | t }}</th>
+                          <th scope="col"><span class="sr-only">{{ 'boletas.colAcciones' | t }}</span></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (b of boletas(); track b.id) {
+                          <tr data-testid="boleta-fila"
+                              [attr.data-boleta-id]="b.id"
+                              [attr.data-estado]="b.estado"
+                              [attr.data-fondos-liberados]="b.fondosLiberados ? 'true' : 'false'">
+                            <td>
+                              <span data-testid="boleta-estado">{{ textoEstado(b) }}</span>
+                            </td>
+                            <td>
+                              <span data-testid="boleta-monto" [attr.data-monto]="b.monto">$ {{ b.monto }}</span>
+                            </td>
+                            <td>
+                              <span data-testid="boleta-cuenta" [attr.data-cuenta-id]="b.cuentaOrigenId">{{ formatearCuenta(b.cuentaOrigenId) }} <span aria-hidden="true">{{ abreviar(b.cuentaOrigenId) }}</span><span class="sr-only">{{ b.cuentaOrigenId }}</span></span>
+                            </td>
+                            <td>
+                              <span data-testid="boleta-emitida-en" [attr.data-instante]="b.emitidaEn">{{ formatearFechaUtc(b.emitidaEn) }}</span>
+                            </td>
+                            <td>
+                              <span data-testid="boleta-vence-en" [attr.data-instante]="b.venceEn">{{ formatearFechaUtc(b.venceEn) }}</span>
+                            </td>
+                            <td class="celda-acciones">
+                              @if (b.estado === 'VIGENTE') {
+                                <button type="button" class="btn-devolver" data-testid="boleta-devolver"
+                                        [disabled]="accionEnCurso()"
+                                        (click)="devolverBoleta(b.id)">
+                                  {{ 'boletas.accionDevolver' | t }}
+                                </button>
+                              }
+                              @if (b.estado === 'VENCIDA' && !b.fondosLiberados) {
+                                <button type="button" class="btn-liberar" data-testid="boleta-liberar"
+                                        [disabled]="accionEnCurso()"
+                                        (click)="liberarBoleta(b.id)">
+                                  {{ 'boletas.accionLiberar' | t }}
+                                </button>
+                              }
+                              <button type="button" class="btn-pdf" data-testid="boleta-comprobante-pdf"
+                                      (click)="descargarPdf('comprobante', b.id)">
+                                {{ 'boletas.comprobantePdf' | t }}
+                              </button>
+                              @if (b.fondosLiberados) {
+                                <button type="button" class="btn-pdf" data-testid="boleta-resumen-pdf"
+                                        (click)="descargarPdf('resumen', b.id)">
+                                  {{ 'boletas.resumenPdf' | t }}
+                                </button>
+                              }
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div id="boletas-panel-emitir"
+                 class="boletas-panel"
+                 data-testid="boletas-panel-emitir"
+                 role="tabpanel"
+                 aria-labelledby="boletas-pestana-emitir"
+                 [hidden]="pestanaBoletas() !== 'emitir'">
+              @if (cuentas().length === 0) {
+                <div class="boletas-sin-cuentas" id="boletas-sin-cuentas" data-testid="boletas-sin-cuentas">
+                  <p>{{ 'boletas.sinCuentas' | t }}</p>
+                </div>
+              } @else {
+                <form class="emitir-form" id="emitir-form" data-testid="emitir-form"
+                      [attr.data-estado]="estadoEmitir()"
+                      [attr.aria-busy]="estadoEmitir() === 'enviando' ? 'true' : 'false'"
+                      novalidate
+                      (submit)="$event.preventDefault()">
+                  <h3 class="emitir-titulo">{{ 'boletas.emitirTitulo' | t }}</h3>
+
+                  @if (emitirExito(); as ex) {
+                    <div class="emitir-exito" id="emitir-exito" data-testid="emitir-exito" role="status">
+                      <p>{{ 'boletas.emitirExito' | t }} <span id="emitir-boleta-id" data-testid="emitir-boleta-id">{{ ex.id }}</span></p>
+                    </div>
+                  }
+
+                  @if (emitirError(); as err) {
+                    <div class="emitir-error" id="emitir-error" data-testid="emitir-error" role="alert" [attr.data-codigo]="err.codigo">
+                      <p>{{ textoError(err.codigo, err.mensaje) }}</p>
+                    </div>
+                  }
+
+                  @if (emitirSinRespuesta()) {
+                    <div class="emitir-sin-respuesta" id="emitir-sin-respuesta" data-testid="emitir-sin-respuesta" role="alert">
+                      <p>{{ 'boletas.emitirSinRespuesta' | t }}</p>
+                      <button type="button" class="boton-secundario" id="emitir-reintentar" data-testid="emitir-reintentar"
+                              [disabled]="estadoEmitir() === 'enviando'"
+                              (click)="reintentarEmitir()">
+                        {{ 'comun.reintentar' | t }}
+                      </button>
+                    </div>
+                  }
+
+                  <div class="campo">
+                    <label for="emitir-origen">{{ 'boletas.colCuentaOrigen' | t }}</label>
+                    <select id="emitir-origen" data-testid="emitir-origen"
+                            [disabled]="estadoEmitir() === 'enviando'"
+                            [value]="emitirOrigen()"
+                            (change)="emitirOrigen.set($any($event.target).value)"
+                            (input)="emitirOrigen.set($any($event.target).value)">
+                      @for (c of cuentas(); track c.id) {
+                      <option [value]="c.id" [selected]="c.id === emitirOrigen()"
+                              [attr.aria-label]="textoAriaCuenta(c.tipo, c.id, c.saldo)">
+                        {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
+                      </option>
+                      }
+                    </select>
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-monto">{{ 'comun.monto' | t }}</label>
+                    <input type="text" id="emitir-monto" data-testid="emitir-monto"
+                           [placeholder]="'boletas.placeholderMonto' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirMonto()"
+                           (input)="emitirMonto.set($any($event.target).value)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-plazo">{{ 'boletas.plazo' | t }}</label>
+                    <input type="text" id="emitir-plazo" data-testid="emitir-plazo"
+                           [placeholder]="'boletas.placeholderPlazo' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirPlazo()"
+                           (input)="emitirPlazo.set($any($event.target).value)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-beneficiario-rut">{{ 'boletas.rutBeneficiario' | t }}</label>
+                    <input type="text" id="emitir-beneficiario-rut" data-testid="emitir-beneficiario-rut"
+                           [placeholder]="'boletas.placeholderBeneficiarioRut' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirBeneficiarioRut()"
+                           (input)="emitirBeneficiarioRut.set($any($event.target).value)"
+                           (blur)="alSalirRutBeneficiario($event)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-beneficiario-nombre">{{ 'boletas.nombreBeneficiario' | t }}</label>
+                    <input type="text" id="emitir-beneficiario-nombre" data-testid="emitir-beneficiario-nombre"
+                           [placeholder]="'boletas.placeholderBeneficiarioNombre' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirBeneficiarioNombre()"
+                           (input)="emitirBeneficiarioNombre.set($any($event.target).value)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-retirador-rut">{{ 'boletas.rutRetirador' | t }}</label>
+                    <input type="text" id="emitir-retirador-rut" data-testid="emitir-retirador-rut"
+                           [placeholder]="'boletas.placeholderRetiradorRut' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirRetiradorRut()"
+                           (input)="emitirRetiradorRut.set($any($event.target).value)"
+                           (blur)="alSalirRutRetirador($event)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-retirador-nombre">{{ 'boletas.nombreRetirador' | t }}</label>
+                    <input type="text" id="emitir-retirador-nombre" data-testid="emitir-retirador-nombre"
+                           [placeholder]="'boletas.placeholderRetiradorNombre' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirRetiradorNombre()"
+                           (input)="emitirRetiradorNombre.set($any($event.target).value)">
+                  </div>
+
+                  <div class="campo">
+                    <label for="emitir-glosa">{{ 'boletas.glosa' | t }}</label>
+                    <input type="text" id="emitir-glosa" data-testid="emitir-glosa"
+                           [placeholder]="'boletas.placeholderGlosa' | t" autocomplete="off"
+                           [disabled]="estadoEmitir() === 'enviando'"
+                           [value]="emitirGlosa()"
+                           (input)="emitirGlosa.set($any($event.target).value)">
+                  </div>
+
+                  <div class="paso-acciones">
+                    <button type="button" class="boton-primario" id="emitir-enviar" data-testid="emitir-enviar"
+                            [disabled]="estadoEmitir() === 'enviando'"
+                            (click)="alEmitirBoleta()">
+                      @if (estadoEmitir() === 'enviando') {
+                        <span class="spinner-chico" aria-hidden="true"></span> {{ 'boletas.emitiendo' | t }}
+                      } @else {
+                        {{ 'boletas.emitir' | t }}
+                      }
+                    </button>
+                  </div>
+                </form>
+              }
+            </div>
+          }
+        </section>
+      } @else if (vistaActual() === 'abrir-cuenta') {
+        <section class="abrir-cuenta-region" id="abrir-cuenta-region" data-testid="abrir-cuenta-region"
+                 [attr.data-estado]="estadoAbrirCuenta()"
+                 [attr.aria-busy]="estadoAbrirCuenta() === 'cargando' ? 'true' : 'false'"
+                 aria-live="polite">
+
+          @if (estadoAbrirCuenta() === 'cargando') {
+            <div class="abrir-cuenta-cargando" id="abrir-cuenta-cargando" data-testid="abrir-cuenta-cargando">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>{{ 'cuentas.cargando' | t }}</span>
+            </div>
+          }
+
+          @if (estadoAbrirCuenta() === 'error') {
+            <div class="abrir-cuenta-error" id="abrir-cuenta-error" data-testid="abrir-cuenta-error" role="alert">
+              <p>{{ textoErrorCargaAbrirCuenta(errorCargaAbrirCuenta()) }}</p>
+              <button type="button" class="boton-reintentar" id="abrir-cuenta-reintentar" data-testid="abrir-cuenta-reintentar"
+                      (click)="cargarCuentasParaAbrir()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          }
+
+          @if (estadoAbrirCuenta() !== 'error') {
+            <form class="abrir-cuenta-form" id="abrir-cuenta-form" data-testid="abrir-cuenta-form"
+                  novalidate
+                  (submit)="alEnviarAbrirCuenta($event)">
+              <h2 class="abrir-cuenta-titulo">{{ 'abrirCuenta.titulo' | t }}</h2>
+
+              @if (errorEnvioAbrirCuenta(); as err) {
+                <div class="abrir-cuenta-codigo-error" id="abrir-cuenta-codigo-error" data-testid="abrir-cuenta-codigo-error"
+                     role="alert" [attr.data-codigo]="err.codigo">
+                  <p>{{ textoError(err.codigo, err.mensaje) }}</p>
+                </div>
+              }
+
+              <div class="campo">
+                <label for="abrir-cuenta-tipo">{{ 'abrirCuenta.tipoCuenta' | t }}</label>
+                <select id="abrir-cuenta-tipo" data-testid="abrir-cuenta-tipo"
+                        [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
+                        [value]="tipoAbrirCuenta()"
+                        (change)="tipoAbrirCuenta.set($any($event.target).value)">
+                  <option value="CORRIENTE">{{ 'cuenta.tipo.corriente' | t }}</option>
+                  <option value="AHORRO">{{ 'cuenta.tipo.ahorro' | t }}</option>
+                </select>
+              </div>
+
+              <div class="campo">
+                <label for="abrir-cuenta-monto">{{ 'comun.monto' | t }}</label>
+                <input type="text" id="abrir-cuenta-monto" data-testid="abrir-cuenta-monto"
+                       autocomplete="off"
+                       [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
+                       [value]="montoAbrirCuenta()"
+                       (input)="montoAbrirCuenta.set($any($event.target).value)">
+              </div>
+
+              @if (cuentas().length > 0) {
+                <div class="campo">
+                  <label for="abrir-cuenta-origen">{{ 'comun.cuentaOrigen' | t }}</label>
+                  <select id="abrir-cuenta-origen" data-testid="abrir-cuenta-origen"
+                          [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()"
+                          [value]="origenAbrirCuenta()"
+                          (change)="origenAbrirCuenta.set($any($event.target).value)">
+                    <option value="">{{ 'comun.eligeCuenta' | t }}</option>
+                    @for (c of cuentas(); track c.id) {
+                      <option [value]="c.id" [attr.data-tipo]="c.tipo"
+                              [attr.aria-label]="textoAriaCuenta(c.tipo, c.id, c.saldo)">
+                        {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }} · $ {{ c.saldo }}
+                      </option>
+                    }
+                  </select>
+                </div>
+              }
+
+              <div class="paso-acciones">
+                <button type="submit" class="boton-primario" id="abrir-cuenta-enviar" data-testid="abrir-cuenta-enviar"
+                        [disabled]="estadoAbrirCuenta() === 'cargando' || enviandoAbrirCuenta()">
+                  @if (enviandoAbrirCuenta()) {
+                    <span class="spinner-chico" aria-hidden="true"></span> {{ 'abrirCuenta.abriendo' | t }}
+                  } @else {
+                    {{ 'abrirCuenta.titulo' | t }}
+                  }
+                </button>
+              </div>
+            </form>
+          }
+        </section>
+      } @else if (vistaActual() === 'movimientos') {
+        <section class="movimientos-region" id="movimientos-region" data-testid="movimientos-region"
+                 [attr.data-estado]="estadoMovimientos()"
+                 [attr.aria-busy]="estadoMovimientos() === 'cargando' ? 'true' : 'false'"
+                 aria-live="polite">
+
+          @if (errorCuentasMovimientos()) {
+            <div class="movimientos-cuentas-error" id="movimientos-cuentas-error" data-testid="movimientos-cuentas-error" role="alert">
+              <p>{{ 'comun.errorCuentas' | t }}</p>
+              <button type="button" class="boton-reintentar" id="movimientos-reintentar" data-testid="movimientos-reintentar"
+                      (click)="cargarCuentasParaMovimientos()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          }
+
+          <form class="movimientos-form" id="movimientos-form" data-testid="movimientos-form"
                 novalidate
-                [attr.data-estado]="estadoGuardadoContacto()"
-                [attr.aria-busy]="estadoGuardadoContacto() === 'guardando' ? 'true' : null"
-                (submit)="alGuardarContacto($event)">
+                (submit)="alBuscarMovimientos($event)">
+            <h2 class="movimientos-titulo">{{ 'movimientos.titulo' | t }}</h2>
 
-            <h2 class="contacto-titulo">Datos de contacto</h2>
-
-            @if (estadoGuardadoContacto() === 'error' && errorContacto(); as err) {
-              <div class="contacto-error" id="contacto-error" data-testid="contacto-error"
+            @if (estadoMovimientos() === 'error' && errorMovimientos(); as err) {
+              <div class="movimientos-error" id="movimientos-error" data-testid="movimientos-error"
                    role="alert" [attr.data-codigo]="err.codigo">
-                <p class="contacto-codigo-error" id="contacto-codigo-error" data-testid="contacto-codigo-error">{{ err.codigo }}</p>
-                <p class="contacto-mensaje-error">{{ textoError(err.codigo, err.mensaje) }}</p>
+                <p class="movimientos-codigo-error" id="movimientos-codigo-error" data-testid="movimientos-codigo-error">{{ err.codigo }}</p>
+                <p class="movimientos-mensaje-error">{{ mensajeErrorMovimientos(err.codigo) }}</p>
               </div>
             }
 
-            @if (estadoGuardadoContacto() === 'sin-respuesta') {
-              <div class="contacto-sin-respuesta" id="contacto-sin-respuesta" data-testid="contacto-sin-respuesta" role="alert">
-                <p>No se pudo conectar con el servidor.</p>
-              </div>
-            }
-
-            <div class="contacto-grid">
+            <div class="movimientos-filtros-grid">
               <div class="campo">
-                <label for="contacto-nombre">Nombre</label>
-                <input type="text" id="contacto-nombre" data-testid="contacto-nombre"
-                       [value]="contactoNombre()"
-                       (input)="contactoNombre.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoNombre.set($any($event.target).value); alEditarCampoContacto()">
-              </div>
-
-              <div class="campo">
-                <label for="contacto-apellido">Apellido</label>
-                <input type="text" id="contacto-apellido" data-testid="contacto-apellido"
-                       [value]="contactoApellido()"
-                       (input)="contactoApellido.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoApellido.set($any($event.target).value); alEditarCampoContacto()">
-              </div>
-
-              <div class="campo campo-completo">
-                <label for="contacto-direccion">Dirección</label>
-                <input type="text" id="contacto-direccion" data-testid="contacto-direccion"
-                       [value]="contactoDireccion()"
-                       (input)="contactoDireccion.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoDireccion.set($any($event.target).value); alEditarCampoContacto()">
+                <label for="movimientos-cuenta">{{ 'movimientos.cuenta' | t }}</label>
+                <select id="movimientos-cuenta" data-testid="movimientos-cuenta"
+                        [value]="filtroCuentaId()"
+                        (change)="filtroCuentaId.set($any($event.target).value)"
+                        (input)="filtroCuentaId.set($any($event.target).value)">
+                  <option value="">{{ 'comun.eligeCuenta' | t }}</option>
+                  @for (c of cuentas(); track c.id) {
+                    <option [value]="c.id"
+                            [attr.aria-label]="textoAriaCuentaSinSaldo(c.tipo, c.id)">
+                      {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }}
+                    </option>
+                  }
+                </select>
               </div>
 
               <div class="campo">
-                <label for="contacto-ciudad">Ciudad</label>
-                <input type="text" id="contacto-ciudad" data-testid="contacto-ciudad"
-                       [value]="contactoCiudad()"
-                       (input)="contactoCiudad.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoCiudad.set($any($event.target).value); alEditarCampoContacto()">
+                <label for="movimientos-transaccion">{{ 'movimientos.idTransaccion' | t }}</label>
+                <input type="text" id="movimientos-transaccion" data-testid="movimientos-transaccion"
+                       [placeholder]="'movimientos.placeholderTransaccion' | t"
+                       [value]="filtroTransaccionId()"
+                       (input)="filtroTransaccionId.set($any($event.target).value)"
+                       (change)="filtroTransaccionId.set($any($event.target).value)">
               </div>
 
               <div class="campo">
-                <label for="contacto-estado">Estado / Región</label>
-                <input type="text" id="contacto-estado" data-testid="contacto-estado"
-                       [value]="contactoEstado()"
-                       (input)="contactoEstado.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoEstado.set($any($event.target).value); alEditarCampoContacto()">
+                <label for="movimientos-desde">{{ 'movimientos.desde' | t }}</label>
+                <input type="text" id="movimientos-desde" data-testid="movimientos-desde"
+                       [placeholder]="'movimientos.placeholderDesde' | t"
+                       [value]="filtroDesde()"
+                       (input)="filtroDesde.set($any($event.target).value)"
+                       (change)="filtroDesde.set($any($event.target).value)">
               </div>
 
               <div class="campo">
-                <label for="contacto-codigo-postal">Código postal</label>
-                <input type="text" id="contacto-codigo-postal" data-testid="contacto-codigo-postal"
-                       [value]="contactoCodigoPostal()"
-                       (input)="contactoCodigoPostal.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoCodigoPostal.set($any($event.target).value); alEditarCampoContacto()">
+                <label for="movimientos-hasta">{{ 'movimientos.hasta' | t }}</label>
+                <input type="text" id="movimientos-hasta" data-testid="movimientos-hasta"
+                       [placeholder]="'movimientos.placeholderHasta' | t"
+                       [value]="filtroHasta()"
+                       (input)="filtroHasta.set($any($event.target).value)"
+                       (change)="filtroHasta.set($any($event.target).value)">
               </div>
 
               <div class="campo">
-                <label for="contacto-telefono">Teléfono</label>
-                <input type="text" id="contacto-telefono" data-testid="contacto-telefono"
-                       [value]="contactoTelefono()"
-                       (input)="contactoTelefono.set($any($event.target).value); alEditarCampoContacto()"
-                       (change)="contactoTelefono.set($any($event.target).value); alEditarCampoContacto()">
+                <label for="movimientos-monto">{{ 'comun.monto' | t }}</label>
+                <input type="text" id="movimientos-monto" data-testid="movimientos-monto"
+                       inputmode="decimal"
+                       [placeholder]="'movimientos.placeholderMonto' | t"
+                       [value]="filtroMonto()"
+                       (input)="filtroMonto.set($any($event.target).value)"
+                       (change)="filtroMonto.set($any($event.target).value)">
               </div>
             </div>
 
             <div class="paso-acciones">
-              <button type="submit" class="boton-primario" id="contacto-guardar" data-testid="contacto-guardar"
-                      [disabled]="estadoGuardadoContacto() === 'guardando'"
-                      (click)="alGuardarContacto($event)">
-                @if (estadoGuardadoContacto() === 'guardando') {
-                  <span class="contacto-guardando" id="contacto-guardando" data-testid="contacto-guardando">
-                    <span class="spinner-chico" aria-hidden="true"></span> Guardando…
-                  </span>
+              <button type="submit" class="boton-primario" id="movimientos-buscar" data-testid="movimientos-buscar"
+                      [disabled]="estadoMovimientos() === 'cargando'">
+                @if (estadoMovimientos() === 'cargando') {
+                  <span class="spinner-chico" aria-hidden="true"></span> {{ 'movimientos.buscando' | t }}
                 } @else {
-                  Guardar
+                  {{ 'movimientos.buscar' | t }}
                 }
               </button>
             </div>
           </form>
-        }
-      </section>
+
+          @if (estadoMovimientos() === 'cargando') {
+            <div class="movimientos-cargando" id="movimientos-cargando" data-testid="movimientos-cargando">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>{{ 'movimientos.cargando' | t }}</span>
+            </div>
+          }
+
+          @if (estadoMovimientos() === 'vacio') {
+            <div class="movimientos-vacio" id="movimientos-vacio" data-testid="movimientos-vacio">
+              <p>{{ 'movimientos.vacio' | t }}</p>
+            </div>
+          }
+
+          @if (estadoMovimientos() === 'listo') {
+            <div class="tabla-scroll">
+              <table class="movimientos-tabla" id="movimientos-tabla" data-testid="movimientos-tabla">
+                <caption>{{ 'movimientos.tablaTitulo' | t }}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{{ 'movimientos.colConcepto' | t }}</th>
+                    <th scope="col">{{ 'movimientos.colMonto' | t }}</th>
+                    <th scope="col">{{ 'movimientos.colTipo' | t }}</th>
+                    <th scope="col">{{ 'comun.fecha' | t }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (mov of movimientos(); track mov.id) {
+                    <tr class="movimiento-fila" data-testid="movimiento-fila"
+                        [attr.data-mov-id]="mov.id"
+                        [attr.data-transaccion-id]="mov.transaccionId">
+                      <td class="movimiento-concepto" data-testid="movimiento-concepto"
+                          [attr.data-concepto]="mov.concepto">{{ obtenerRotuloConcepto(mov.concepto) }}</td>
+                      <td class="movimiento-monto" data-testid="movimiento-monto"
+                          [attr.data-monto]="obtenerMontoAbsoluto(mov.monto)">{{ obtenerMontoAbsoluto(mov.monto) }}</td>
+                      <td class="movimiento-signo" data-testid="movimiento-signo"
+                          [attr.data-signo]="obtenerSigno(mov.monto)">{{ textoSigno(mov.monto) }}</td>
+                      <td class="movimiento-fecha" data-testid="movimiento-fecha"
+                          [attr.data-fecha]="mov.fecha">{{ formatearFechaUtc(mov.fecha) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            @if (hayMasMovimientos()) {
+              <div class="movimientos-aviso-tope" id="movimientos-aviso-tope" data-testid="movimientos-aviso-tope" role="status">
+                <p>{{ 'movimientos.avisoTope' | t }}</p>
+              </div>
+            }
+          }
+        </section>
+      } @else if (vistaActual() === 'pagos') {
+        <section class="pagos-region" id="pagos-region" data-testid="pagos-region">
+          @if (errorCuentasPagos()) {
+            <div class="pagos-cuentas-error" id="pagos-cuentas-error" data-testid="pagos-cuentas-error" role="alert">
+              <p>{{ 'comun.errorCuentas' | t }}</p>
+              <button type="button" class="boton-reintentar" id="pagos-cuentas-reintentar" data-testid="pagos-cuentas-reintentar"
+                      (click)="cargarCuentasParaPagos()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          } @else if (cuentas().length === 0 && estadoCuentasPagos() === 'listo') {
+            <div class="pagos-sin-cuentas" id="pagos-sin-cuentas" data-testid="pagos-sin-cuentas">
+              <p>{{ 'pagos.sinCuentas' | t }}</p>
+            </div>
+          } @else if (cuentas().length > 0) {
+            <form class="pagos-form" id="pagos-form" data-testid="pagos-form"
+                  novalidate
+                  [attr.data-estado]="estadoPago()"
+                  [attr.aria-busy]="estadoPago() === 'enviando' ? 'true' : 'false'"
+                  (submit)="alEnviarPago($event)">
+              <h2 class="pagos-titulo">{{ 'pagos.titulo' | t }}</h2>
+
+              @if (estadoPago() === 'error' && errorPago(); as err) {
+                <div class="pagos-error" id="pagos-error" data-testid="pagos-error"
+                     role="alert" [attr.data-codigo]="err.codigo">
+                  <p class="pagos-codigo-error" id="pagos-codigo-error" data-testid="pagos-codigo-error">{{ err.codigo }}</p>
+                  <p class="pagos-mensaje-error">{{ textoError(err.codigo, err.mensaje) }}</p>
+                </div>
+              }
+
+              @if (estadoPago() === 'sin-respuesta') {
+                <div class="pagos-sin-respuesta" id="pagos-sin-respuesta" data-testid="pagos-sin-respuesta">
+                  <p>{{ 'pagos.sinRespuesta' | t }}</p>
+                  <button type="button" class="boton-reintentar" id="pagos-reintentar" data-testid="pagos-reintentar"
+                          (click)="reintentarPago()">
+                    {{ 'comun.reintentar' | t }}
+                  </button>
+                </div>
+              }
+
+              @if (estadoPago() === 'exito') {
+                <div class="pagos-exito" id="pagos-exito" data-testid="pagos-exito" role="status">
+                  <p>{{ 'pagos.exito' | t }}</p>
+                  <p>{{ 'pagos.idPago' | t }} <span class="pagos-pago-id" id="pagos-pago-id" data-testid="pagos-pago-id">{{ pagoExitosoId() }}</span></p>
+                  @if (pagoRepetido()) {
+                    <p class="pagos-repetido" id="pagos-repetido" data-testid="pagos-repetido">{{ 'pagos.repetido' | t }}</p>
+                  }
+                </div>
+              }
+
+              <div class="pagos-grid">
+                <div class="campo">
+                  <label for="pagos-origen">{{ 'comun.cuentaOrigen' | t }}</label>
+                  <select id="pagos-origen" data-testid="pagos-origen"
+                          [value]="pagoOrigen()"
+                          [disabled]="estadoPago() === 'enviando'"
+                          (change)="pagoOrigen.set($any($event.target).value)"
+                          (input)="pagoOrigen.set($any($event.target).value)">
+                    @for (c of cuentas(); track c.id) {
+                      <option [value]="c.id"
+                              [attr.aria-label]="textoAriaCuentaSinSaldo(c.tipo, c.id)">
+                        {{ textoTipoCuenta(c.tipo) }} {{ abreviar(c.id) }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-monto">{{ 'comun.monto' | t }}</label>
+                  <input type="text" id="pagos-monto" data-testid="pagos-monto"
+                         inputmode="decimal"
+                         [placeholder]="'pagos.placeholderMonto' | t"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoMonto()"
+                         (input)="pagoMonto.set($any($event.target).value)"
+                         (change)="pagoMonto.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-nombre">{{ 'pagos.beneficiarioNombre' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-nombre" data-testid="pagos-beneficiario-nombre"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioNombre()"
+                         (input)="pagoBeneficiarioNombre.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioNombre.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-direccion">{{ 'pagos.direccion' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-direccion" data-testid="pagos-beneficiario-direccion"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioDireccion()"
+                         (input)="pagoBeneficiarioDireccion.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioDireccion.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-ciudad">{{ 'pagos.ciudad' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-ciudad" data-testid="pagos-beneficiario-ciudad"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioCiudad()"
+                         (input)="pagoBeneficiarioCiudad.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioCiudad.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-estado">{{ 'pagos.estado' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-estado" data-testid="pagos-beneficiario-estado"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioEstado()"
+                         (input)="pagoBeneficiarioEstado.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioEstado.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-codigo-postal">{{ 'pagos.codigoPostal' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-codigo-postal" data-testid="pagos-beneficiario-codigo-postal"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioCodigoPostal()"
+                         (input)="pagoBeneficiarioCodigoPostal.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioCodigoPostal.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-beneficiario-telefono">{{ 'pagos.telefono' | t }}</label>
+                  <input type="text" id="pagos-beneficiario-telefono" data-testid="pagos-beneficiario-telefono"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoBeneficiarioTelefono()"
+                         (input)="pagoBeneficiarioTelefono.set($any($event.target).value)"
+                         (change)="pagoBeneficiarioTelefono.set($any($event.target).value)">
+                </div>
+
+                <div class="campo">
+                  <label for="pagos-cuenta-beneficiario">{{ 'pagos.cuentaBeneficiario' | t }}</label>
+                  <input type="text" id="pagos-cuenta-beneficiario" data-testid="pagos-cuenta-beneficiario"
+                         [disabled]="estadoPago() === 'enviando'"
+                         [value]="pagoCuentaBeneficiario()"
+                         (input)="pagoCuentaBeneficiario.set($any($event.target).value)"
+                         (change)="pagoCuentaBeneficiario.set($any($event.target).value)">
+                </div>
+              </div>
+
+              <div class="paso-acciones">
+                <button type="submit" class="boton-primario" id="pagos-enviar" #pagosEnviar data-testid="pagos-enviar"
+                        [disabled]="estadoPago() === 'enviando'"
+                        (click)="alEnviarPago($event)">
+                  @if (estadoPago() === 'enviando') {
+                    <span class="pagos-enviando" id="pagos-enviando" data-testid="pagos-enviando">
+                      <span class="spinner-chico" aria-hidden="true"></span> {{ 'pagos.pagando' | t }}
+                    </span>
+                  } @else {
+                    {{ 'pagos.pagar' | t }}
+                  }
+                </button>
+              </div>
+            </form>
+          }
+
+          <div class="pagos-lista" id="pagos-lista" data-testid="pagos-lista"
+               [attr.data-estado]="estadoListaPagos()"
+               [attr.aria-busy]="estadoListaPagos() === 'cargando' ? 'true' : 'false'">
+
+            @if (estadoListaPagos() === 'cargando') {
+              <div class="pagos-lista-cargando" id="pagos-lista-cargando" data-testid="pagos-lista-cargando">
+                <div class="spinner" aria-hidden="true"></div>
+                <span>{{ 'pagos.cargandoLista' | t }}</span>
+              </div>
+            }
+
+            @if (estadoListaPagos() === 'error') {
+              <div class="pagos-lista-error" id="pagos-lista-error" data-testid="pagos-lista-error" role="alert">
+                <p>{{ 'pagos.errorLista' | t }}</p>
+              </div>
+            }
+
+            @if (estadoListaPagos() === 'vacio') {
+              <div class="pagos-vacio" id="pagos-vacio" data-testid="pagos-vacio">
+                <p>{{ 'pagos.listaVacia' | t }}</p>
+              </div>
+            }
+
+            @if (estadoListaPagos() === 'listo') {
+              <div class="tabla-scroll">
+                <table class="pagos-tabla" id="pagos-tabla" data-testid="pagos-tabla">
+                  <caption>{{ 'pagos.historialTitulo' | t }}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">{{ 'comun.fecha' | t }}</th>
+                      <th scope="col">{{ 'pagos.colCuentaOrigen' | t }}</th>
+                      <th scope="col">{{ 'pagos.colBeneficiario' | t }}</th>
+                      <th scope="col">{{ 'pagos.colCuentaBeneficiario' | t }}</th>
+                      <th scope="col">{{ 'comun.monto' | t }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (p of pagos(); track p.id) {
+                      <tr class="pago-fila" data-testid="pago-fila"
+                          [attr.data-pago-id]="p.id"
+                          [attr.data-transaccion-id]="p.transaccionId">
+                        <td class="pago-fecha" data-testid="pago-fecha"
+                            [attr.data-fecha]="p.pagadoEn">{{ formatearFechaUtc(p.pagadoEn) }}</td>
+                        <td class="pago-origen" data-testid="pago-origen"
+                            [attr.data-cuenta-id]="p.cuentaOrigenId"><span aria-hidden="true">{{ abreviar(p.cuentaOrigenId) }}</span><span class="sr-only">{{ p.cuentaOrigenId }}</span></td>
+                        <td class="pago-beneficiario" data-testid="pago-beneficiario">{{ p.beneficiarioNombre }}</td>
+                        <td class="pago-cuenta-beneficiario" data-testid="pago-cuenta-beneficiario">{{ p.cuentaBeneficiario }}</td>
+                        <td class="pago-monto" data-testid="pago-monto"
+                            [attr.data-monto]="p.monto">$ {{ p.monto }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </section>
+
+        <zfb-dialogo
+          #dialogoConfirmarPagos
+          tipo="confirmar"
+          [abierto]="modalConfirmacionPagosAbierto()"
+          [monto]="pagoMonto()"
+          (alAceptar)="confirmarPago()"
+          (alCancelar)="cancelarPago()"
+        ></zfb-dialogo>
+      } @else if (vistaActual() === 'contacto') {
+        <section class="contacto-region" id="contacto-region" data-testid="contacto-region"
+                 [attr.data-estado]="estadoContacto()"
+                 [attr.aria-busy]="estadoContacto() === 'cargando' ? 'true' : null">
+
+          @if (estadoContacto() === 'cargando') {
+            <div class="contacto-cargando" id="contacto-cargando" data-testid="contacto-cargando">
+              <div class="spinner" aria-hidden="true"></div>
+              <span>{{ 'contacto.cargando' | t }}</span>
+            </div>
+          } @else if (estadoContacto() === 'error') {
+            <div class="contacto-carga-error" id="contacto-carga-error" data-testid="contacto-carga-error" role="alert">
+              <p>{{ 'contacto.errorCarga' | t }}</p>
+              <button type="button" class="boton-reintentar" id="contacto-carga-reintentar" data-testid="contacto-carga-reintentar"
+                      (click)="cargarContacto()">
+                {{ 'comun.reintentar' | t }}
+              </button>
+            </div>
+          } @else if (estadoContacto() === 'listo') {
+            <div class="contacto-aviso" id="contacto-aviso" data-testid="contacto-aviso" role="status" aria-live="polite">
+              @if (avisoContactoGuardado()) {
+                <div class="contacto-guardado" id="contacto-guardado" data-testid="contacto-guardado">
+                  <p>{{ 'contacto.guardado' | t }}</p>
+                </div>
+              }
+            </div>
+
+            <div class="contacto-email-contenedor">
+              <div class="campo">
+                <label for="contacto-email">{{ 'contacto.correo' | t }}</label>
+                <input type="text" id="contacto-email" data-testid="contacto-email"
+                       readonly
+                       [value]="contactoEmail()">
+              </div>
+            </div>
+
+            <form class="contacto-form" id="contacto-form" data-testid="contacto-form"
+                  novalidate
+                  [attr.data-estado]="estadoGuardadoContacto()"
+                  [attr.aria-busy]="estadoGuardadoContacto() === 'guardando' ? 'true' : null"
+                  (submit)="alGuardarContacto($event)">
+
+              <h2 class="contacto-titulo">{{ 'contacto.titulo' | t }}</h2>
+
+              @if (estadoGuardadoContacto() === 'error' && errorContacto(); as err) {
+                <div class="contacto-error" id="contacto-error" data-testid="contacto-error"
+                     role="alert" [attr.data-codigo]="err.codigo">
+                  <p class="contacto-codigo-error" id="contacto-codigo-error" data-testid="contacto-codigo-error">{{ err.codigo }}</p>
+                  <p class="contacto-mensaje-error">{{ textoError(err.codigo, err.mensaje) }}</p>
+                </div>
+              }
+
+              @if (estadoGuardadoContacto() === 'sin-respuesta') {
+                <div class="contacto-sin-respuesta" id="contacto-sin-respuesta" data-testid="contacto-sin-respuesta" role="alert">
+                  <p>{{ 'contacto.sinRespuesta' | t }}</p>
+                </div>
+              }
+
+              <div class="contacto-grid">
+                <div class="campo">
+                  <label for="contacto-nombre">{{ 'contacto.nombre' | t }}</label>
+                  <input type="text" id="contacto-nombre" data-testid="contacto-nombre"
+                         [value]="contactoNombre()"
+                         (input)="contactoNombre.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoNombre.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo">
+                  <label for="contacto-apellido">{{ 'contacto.apellido' | t }}</label>
+                  <input type="text" id="contacto-apellido" data-testid="contacto-apellido"
+                         [value]="contactoApellido()"
+                         (input)="contactoApellido.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoApellido.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo campo-completo">
+                  <label for="contacto-direccion">{{ 'contacto.direccion' | t }}</label>
+                  <input type="text" id="contacto-direccion" data-testid="contacto-direccion"
+                         [value]="contactoDireccion()"
+                         (input)="contactoDireccion.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoDireccion.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo">
+                  <label for="contacto-ciudad">{{ 'contacto.ciudad' | t }}</label>
+                  <input type="text" id="contacto-ciudad" data-testid="contacto-ciudad"
+                         [value]="contactoCiudad()"
+                         (input)="contactoCiudad.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoCiudad.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo">
+                  <label for="contacto-estado">{{ 'contacto.estado' | t }}</label>
+                  <input type="text" id="contacto-estado" data-testid="contacto-estado"
+                         [value]="contactoEstado()"
+                         (input)="contactoEstado.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoEstado.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo">
+                  <label for="contacto-codigo-postal">{{ 'contacto.codigoPostal' | t }}</label>
+                  <input type="text" id="contacto-codigo-postal" data-testid="contacto-codigo-postal"
+                         [value]="contactoCodigoPostal()"
+                         (input)="contactoCodigoPostal.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoCodigoPostal.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+
+                <div class="campo">
+                  <label for="contacto-telefono">{{ 'contacto.telefono' | t }}</label>
+                  <input type="text" id="contacto-telefono" data-testid="contacto-telefono"
+                         [value]="contactoTelefono()"
+                         (input)="contactoTelefono.set($any($event.target).value); alEditarCampoContacto()"
+                         (change)="contactoTelefono.set($any($event.target).value); alEditarCampoContacto()">
+                </div>
+              </div>
+
+              <div class="paso-acciones">
+                <button type="submit" class="boton-primario" id="contacto-guardar" data-testid="contacto-guardar"
+                        [disabled]="estadoGuardadoContacto() === 'guardando'"
+                        (click)="alGuardarContacto($event)">
+                  @if (estadoGuardadoContacto() === 'guardando') {
+                    <span class="contacto-guardando" id="contacto-guardando" data-testid="contacto-guardando">
+                      <span class="spinner-chico" aria-hidden="true"></span> {{ 'comun.guardando' | t }}
+                    </span>
+                  } @else {
+                    {{ 'comun.guardar' | t }}
+                  }
+                </button>
+              </div>
+            </form>
+          }
+        </section>
+      }
+
+      <zfb-dialogo
+        #dialogoInactividad
+        tipo="inactividad"
+        [abierto]="inactividad.dialogoAbierto()"
+        [segundos]="inactividad.segundosRestantes()"
+        [anuncioSegundos]="inactividad.anuncioSegundos()"
+        (alSeguir)="seguirInactividad()"
+        (alSalir)="salirInactividad()"
+      ></zfb-dialogo>
     }
 
-    <zfb-dialogo
-      #dialogoInactividad
-      tipo="inactividad"
-      [abierto]="inactividad.dialogoAbierto()"
-      [segundos]="inactividad.segundosRestantes()"
-      [anuncioSegundos]="inactividad.anuncioSegundos()"
-      (alSeguir)="seguirInactividad()"
-      (alSalir)="salirInactividad()"
-    ></zfb-dialogo>
-  }
+    <div class="acceso" id="login-popover" #loginPopover data-testid="login-popover" popover
+         role="dialog" aria-labelledby="acceso-titulo"
+         [attr.data-estado]="estadoPopover()"
+         (toggle)="alCambiarPopover($event)">
+      <h2 id="acceso-titulo">{{ 'login.titulo' | t }}</h2>
+      <iframe id="login-marco" #loginMarco data-testid="login-marco"
+              [title]="'login.marcoTitulo' | t"
+              src="http://localhost:3000/auth/marco"></iframe>
+      <p class="seguro">{{ 'login.avisoSeguridad' | t }}</p>
+    </div>
 
-  <div class="acceso" id="login-popover" #loginPopover data-testid="login-popover" popover
-       role="dialog" aria-labelledby="acceso-titulo"
-       [attr.data-estado]="estadoPopover()"
-       (toggle)="alCambiarPopover($event)">
-    <h2 id="acceso-titulo">Ingresa a tu cuenta</h2>
-    <iframe id="login-marco" #loginMarco data-testid="login-marco"
-            title="Ingreso seguro a zeroFeeBank"
-            src="http://localhost:3000/auth/marco"></iframe>
-    <p class="seguro">Tu clave se escribe en un marco aparte, de otro origen. Esta página no puede leerla.</p>
-  </div>
-
-  <p class="franja-simulacion" data-testid="aviso-simulacion" role="note">Simulación para practicar automatización de pruebas. No es un banco ni un servicio financiero. Todos los datos son ficticios.</p>
-</main>
+    <p class="franja-simulacion" data-testid="aviso-simulacion" role="note">{{ 'comun.avisoSimulacion' | t }}</p>
+  </main>
 }

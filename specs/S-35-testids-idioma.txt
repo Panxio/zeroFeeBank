@@ -1,0 +1,2 @@
+# Nace en S-35 F1 (selector de idioma ES/EN). Esta lista exime SOLO a `sobran`.
+idioma-selector

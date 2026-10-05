@@ -102,10 +102,10 @@ Cabeceras: `Authorization: Bearer <token>` y `Idempotency-Key: <clave>`.
   "cuentaOrigenId": "<uuid>",
   "monto": "500.00",
   "plazoDias": 30,
-  "beneficiarioRut": "12345678-2",
+  "beneficiarioRut": "12345678-5",
   "beneficiarioNombre": "Constructora Andes SpA",
   "glosa": "Fiel cumplimiento contrato 123",
-  "retiradorRut": "9876543-5",
+  "retiradorRut": "9876543-3",
   "retiradorNombre": "Ana Soto"
 }
 ```
@@ -127,10 +127,10 @@ Cabeceras: `Authorization: Bearer <token>` y `Idempotency-Key: <clave>`.
   "estado": "VIGENTE",
   "monto": "500.00",
   "cuentaOrigenId": "<uuid>",
-  "beneficiarioRut": "12345678-2",
+  "beneficiarioRut": "12345678-5",
   "beneficiarioNombre": "Constructora Andes SpA",
   "glosa": "Fiel cumplimiento contrato 123",
-  "retiradorRut": "9876543-5",
+  "retiradorRut": "9876543-3",
   "retiradorNombre": "Ana Soto",
   "emitidaEn": "<ISO-8601>",
   "venceEn": "<ISO-8601>",
@@ -159,7 +159,7 @@ mismo orden, con `estado` calculado contra el reloj (V4).
 Cabecera: `Idempotency-Key: <clave>`. **`Authorization` se ignora si viene.**
 
 ```json
-{ "rutRetirador": "9876543-5" }
+{ "rutRetirador": "9876543-3" }
 ```
 
 **`200 OK`** con el `<BoletaDto>` (ya en `COBRADA`) más `"transaccionId"` al final: el asiento
@@ -324,16 +324,32 @@ export function normalizarRut(entrada: unknown): string;   // lanza RutInvalidoE
 ```
 
 - Acepta con puntos o sin ellos, con espacios alrededor, y el dígito verificador en minúscula:
-  `"12.345.678-2"`, `" 12345678-2 "` y `"12345678-k"` son entradas válidas cuando el DV cuadra.
+  `"12.345.678-5"`, `" 12345678-5 "` y `"1000070-k"` son entradas válidas cuando el DV cuadra.
 - **El guion es obligatorio.** `"123456782"` es inválido: sin separador no se sabe dónde termina
   el número.
 - El cuerpo tiene entre 1 y 8 dígitos. Los ceros a la izquierda se descartan al normalizar.
-- **Normaliza a `<cuerpo sin ceros a la izquierda>-<DV en mayúscula>`**: `"12345678-2"`.
+- **Normaliza a `<cuerpo sin ceros a la izquierda>-<DV en mayúscula>`**: `"12345678-5"`.
 - El dígito verificador se calcula con el **módulo 11** estándar: multiplicadores 2,3,4,5,6,7
   cíclicos de derecha a izquierda; `resto = suma mod 11`; `dv = 11 - resto`; `11 → '0'`,
   `10 → 'K'`.
 - Cualquier otra entrada (no string, vacía, con letras en el cuerpo, DV que no cuadra) es
   inválida.
+
+**Enmienda de bordes (2026-10-02): los tres casos que la especificación dejaba
+abiertos.** Se fija lo que la implementación ya hace (medido sobre `rut.ts` con `esRutValido`); no se cambia el código:
+
+| Entrada | Resultado | Regla |
+|---|---|---|
+| `"0-0"`, `"00-0"` | **inválido** | «1 a 8 dígitos» se mide **después** de descartar los ceros a la izquierda: un cuerpo que queda vacío no es un RUT, aunque el DV (`0`) cuadre. |
+| `"12345678-.5"`, `"12345678-5."` | **inválido** | El dígito verificador es **exactamente un carácter** `[0-9Kk]`. Los puntos sólo se aceptan en el cuerpo, nunca en la zona del DV ni después de él. |
+| `"12345.678-5"` | **válido** | Los puntos del cuerpo **no se validan por posición**: se descartan donde estén (no se exige el agrupado de miles). Sólo el cuerpo que queda debe tener 1–8 dígitos y el DV cuadrar. |
+| `"000000001-9"` | **válido** | El largo se mide tras quitar ceros (cuerpo `1`), no antes. |
+
+**Casos de prueba:** están en `rut.spec.ts` como
+R14 (`0-0`, `00-0`), R15 (punto en la zona del DV), R16 (`12345.678-5`) y R17 (`000000001-9`). La
+suite de `test:domain` cuenta con **144** pruebas. Calibrados inyectando un
+defecto por caso en `rut.ts`: los cuatro dieron rojo en su caso (M4 también en R10), y `rut.ts`
+quedó sin cambios.
 
 Su árbitro es `npm run test:domain`, con los casos de `src/domain/rut/rut.spec.ts`, **ya
 escritos**.

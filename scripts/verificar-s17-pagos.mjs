@@ -114,6 +114,7 @@ const UNION = new Set([
   ...leerLista('S-17-testids-movimientos.txt'),
   ...LISTA_S17P,
   ...leerLista('S-17-testids-contacto.txt'), // enmienda § 5.1 de S-17-contacto
+  ...leerLista('S-35-testids-idioma.txt'),   // enmienda C3 de S-35
 ]);
 // Los que se repiten legítimamente: la fila de pagos y sus cinco campos (N3), y los del Resumen
 // (T4), que se recorren al entrar.

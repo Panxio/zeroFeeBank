@@ -1,1 +1,35 @@
 /* Estilos específicos de App (los estilos globales están en styles.css) */
+
+.barra-derecha {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selector-idioma {
+  font: 500 0.8125rem/1 var(--sans, system-ui, sans-serif);
+  letter-spacing: 0.02em;
+  color: var(--hueso, #ede9e2);
+  background: rgba(237, 233, 226, 0.08);
+  border: 1px solid var(--linea, rgba(237, 233, 226, 0.16));
+  border-radius: 999px;
+  padding: 0.5em 0.9em;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.selector-idioma:hover {
+  background: rgba(237, 233, 226, 0.16);
+  border-color: rgba(237, 233, 226, 0.3);
+}
+
+.selector-idioma:focus-visible {
+  outline: 2px solid var(--hueso, #ede9e2);
+  outline-offset: 2px;
+}
+
+.selector-idioma option {
+  background: #1c1b19;
+  color: #ede9e2;
+}
