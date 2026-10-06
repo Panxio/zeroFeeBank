@@ -491,22 +491,20 @@ command that reproduces it; the one exception is noted under the table.
 
 | Measure | Result | Measured on | Checked on publish day |
 |---|---|---|---|
-| Mutation score on `src/domain/` (`npm run test:mutation`, Stryker; threshold 70 %) | 83.20 % | 2026-10-05 | done |
-| Domain unit tests (`npm run test:domain`) | 144/144 | 2026-10-05 | done |
-| Integration tests (`npm run test:integracion`) | 446/446 | 2026-10-05 | done |
-| Ledger invariants I1 to I7 (`npm run invariantes`) | 7/7 | 2026-10-05 | done |
-| Invariant calibration (`npm run invariantes:calibrar`, defects injected on purpose) | 21/21 | 2026-10-05 | done |
-| Full demo (`npm run demo:m6`, login to transfer to bond, from reset) | 3/3 runs, 42/42 steps | 2026-10-05 | done |
-| Boletas screen check (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-05 | done |
-| Boletas screen check calibration (`npm run calibrar:s17-boletas`, defects injected on purpose) | 39/54 (13 defects never injected, 2 injected defects not caught) | 2026-10-05 | done |
-| Restriction gate (`npm run guante`) | 6/6 | 2026-10-05 | done |
+| Mutation score on `src/domain/` (`npm run test:mutation`, Stryker; threshold 70 %) | 83.20 % | 2026-10-06 | done |
+| Domain unit tests (`npm run test:domain`) | 144/144 | 2026-10-06 | done |
+| Integration tests (`npm run test:integracion`) | 446/446 | 2026-10-06 | done |
+| Ledger invariants I1 to I7 (`npm run invariantes`) | 7/7 | 2026-10-06 | done |
+| Invariant calibration (`npm run invariantes:calibrar`, defects injected on purpose) | 21/21 | 2026-10-06 | done |
+| Full demo (`npm run demo:m6`, login to transfer to bond, from reset) | 3/3 runs, 42/42 steps | 2026-10-06 | done |
+| Boletas screen check (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-06 | done |
+| Boletas screen check calibration (`npm run calibrar:s17-boletas`, defects injected on purpose) | 52/54 (2 injected defects not caught) | 2026-10-06 | done |
+| Restriction gate (`npm run guante`) | 6/6 | 2026-10-06 | done |
 
 Note: the script behind `calibrar:s17-boletas` is not included in this repository, so that one row
-cannot be reproduced from here; the other rows can. Its drop from 52/54 is not a finding about the
-screen check: the calibration plants each defect by matching literal text in the Angular templates,
-and the bilingual front end replaced that text with translation keys, so 13 of the 54 anchors no
-longer exist and those defects were never injected. They count as not measured, not as caught. The
-2 injected defects that were not caught are the same two as before.
+cannot be reproduced from here; the other rows can. The 2 injected defects that were not caught are
+known blind spots of the screen check, not noise: they were measured before the bilingual front end
+and again after it, and they are the same two.
 
 A "blind" verification is one that could not turn red on the defect it was meant to catch. Finding
 those, and fixing them, is the point of calibrating. The numbers above are not a claim that the

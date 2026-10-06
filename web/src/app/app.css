@@ -33,3 +33,13 @@
   background: #1c1b19;
   color: #ede9e2;
 }
+
+/* Portada en teléfono: Ventanilla + Login ocupan la fila y el selector de idioma baja
+   justo debajo del Login. En la misma fila el Login quedaba fuera de pantalla bajo ~415 px. */
+@media (max-width: 560px) {
+  .barra-derecha:has(.acciones-portada) .selector-idioma {
+    position: absolute;
+    top: calc(var(--barra) - 12px);
+    right: var(--margen);
+  }
+}

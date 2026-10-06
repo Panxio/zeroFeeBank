@@ -511,22 +511,20 @@ tabla.
 
 | Medida | Resultado | Medido el | Verificado el día de publicar |
 |---|---|---|---|
-| Mutación sobre `src/domain/` (`npm run test:mutation`, Stryker; umbral 70 %) | 83,20 % | 2026-10-05 | hecho |
-| Tests unitarios del dominio (`npm run test:domain`) | 144/144 | 2026-10-05 | hecho |
-| Tests de integración (`npm run test:integracion`) | 446/446 | 2026-10-05 | hecho |
-| Invariantes del libro mayor I1 a I7 (`npm run invariantes`) | 7/7 | 2026-10-05 | hecho |
-| Calibración de los invariantes (`npm run invariantes:calibrar`, defectos inyectados a propósito) | 21/21 | 2026-10-05 | hecho |
-| Demo completa (`npm run demo:m6`, login a transferencia a boleta, desde el reset) | 3/3 corridas, 42/42 pasos | 2026-10-05 | hecho |
-| Verificación de la pantalla de boletas (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-05 | hecho |
-| Calibración de esa verificación (`npm run calibrar:s17-boletas`, defectos inyectados a propósito) | 39/54 (13 defectos nunca inyectados, 2 defectos inyectados sin cazar) | 2026-10-05 | hecho |
-| Guante de restricciones (`npm run guante`) | 6/6 | 2026-10-05 | hecho |
+| Mutación sobre `src/domain/` (`npm run test:mutation`, Stryker; umbral 70 %) | 83,20 % | 2026-10-06 | hecho |
+| Tests unitarios del dominio (`npm run test:domain`) | 144/144 | 2026-10-06 | hecho |
+| Tests de integración (`npm run test:integracion`) | 446/446 | 2026-10-06 | hecho |
+| Invariantes del libro mayor I1 a I7 (`npm run invariantes`) | 7/7 | 2026-10-06 | hecho |
+| Calibración de los invariantes (`npm run invariantes:calibrar`, defectos inyectados a propósito) | 21/21 | 2026-10-06 | hecho |
+| Demo completa (`npm run demo:m6`, login a transferencia a boleta, desde el reset) | 3/3 corridas, 42/42 pasos | 2026-10-06 | hecho |
+| Verificación de la pantalla de boletas (`npm run verificar:s17-boletas`) | 43/43 | 2026-10-06 | hecho |
+| Calibración de esa verificación (`npm run calibrar:s17-boletas`, defectos inyectados a propósito) | 52/54 (2 defectos inyectados sin cazar) | 2026-10-06 | hecho |
+| Guante de restricciones (`npm run guante`) | 6/6 | 2026-10-06 | hecho |
 
 Nota: el script que está detrás de `calibrar:s17-boletas` no se incluye en este repositorio, así que
-esa fila no se puede reproducir desde aquí; las demás sí. Su caída desde 52/54 no es un hallazgo
-sobre la verificación de la pantalla: la calibración planta cada defecto buscando texto literal en
-las plantillas de Angular, y el front bilingüe reemplazó ese texto por claves de traducción, así que
-13 de las 54 anclas ya no existen y esos defectos nunca se inyectaron. Cuentan como no medidos, no
-como cazados. Los 2 defectos inyectados sin cazar son los mismos dos de antes.
+esa fila no se puede reproducir desde aquí; las demás sí. Los 2 defectos inyectados sin cazar son
+puntos ciegos conocidos de la verificación de la pantalla, no ruido: se midieron antes del front
+bilingüe y de nuevo después, y son los mismos dos.
 
 Una verificación «ciega» es la que no podía ponerse roja ante el defecto que debía cazar.
 Encontrarlas y corregirlas es justamente el sentido de calibrar. Los números de arriba no afirman
