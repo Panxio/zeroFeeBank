@@ -2199,7 +2199,15 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private limpiarAvisosAccionBoletas(): void {
+    this.accionError.set(null);
+    this.accionSinRespuesta.set(false);
+    this.errorPdfBoletas.set(null);
+  }
+
   alSeleccionarPestanaBoletas(pestana: 'lista' | 'emitir'): void {
+    if (this.pestanaBoletas() === pestana) return;
+    this.limpiarAvisosAccionBoletas();
     this.pestanaBoletas.set(pestana);
     this.cdr.detectChanges();
   }
@@ -2207,6 +2215,7 @@ export class App implements OnInit, AfterViewInit, OnDestroy {
   alPulsarTeclaPestanaBoletas(event: KeyboardEvent): void {
     if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
     event.preventDefault();
+    this.limpiarAvisosAccionBoletas();
     if (this.pestanaBoletas() === 'lista') {
       this.pestanaBoletas.set('emitir');
       this.cdr.detectChanges();

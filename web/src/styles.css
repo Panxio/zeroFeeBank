@@ -2590,3 +2590,17 @@ body {
   overflow-wrap: break-word;
 }
 
+/* cabecera de la portada en teléfono estrecho: evita el desborde del login */
+@media (max-width: 388px) {
+  .portada .barra .marca {
+    letter-spacing: 0.18em;
+  }
+
+  .acciones-portada .link-ventanilla {
+    padding: 0.8em 1.1em;
+  }
+
+  .acciones-portada .boton-login {
+    padding: 0.8em 1.2em;
+  }
+}
